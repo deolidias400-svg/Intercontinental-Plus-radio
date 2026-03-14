@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Intercontinental Motor Radio V10</title>
     
-    <!-- DEPENDÊNCIAS EXTERNAS (CDNs) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- CONFIGURAÇÃO TAILWIND -->
     <script>
         tailwind.config = {
             theme: {
@@ -47,13 +45,38 @@
     </script>
 
     <style>
-        body { background-color: #050505; overflow: hidden; margin: 0; }
+        body { 
+            /* Papel de parede com temática industrial/automotiva */
+            background-image: url('https://images.unsplash.com/photo-1486006396123-c7756711b304?q=80&w=2000'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-color: #050505; 
+            overflow-x: hidden; 
+            margin: 0; 
+        }
+
+        /* Camada escura sobre a imagem para destacar o player */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 0;
+        }
         
+        #root {
+            position: relative;
+            z-index: 10;
+        }
+
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 4px; }
 
-        /* Metal Texture Class */
         .brushed-metal {
             background-color: #1a1a1a;
             background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 10px), linear-gradient(to bottom, #2a2a2a, #111);
@@ -63,24 +86,13 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: white; cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px currentColor; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 2px; cursor: pointer; background: rgba(255,255,255,0.2); }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/"
-  }
-}
-</script>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- CÓDIGO DO APP -->
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback } = React;
 
-        // --- DADOS E CONSTANTES ---
         const STREAM_URL = "https://stream.zeno.fm/wzcgaal0dnltv";
         const EQ_FREQUENCIES = [30, 60, 120, 250, 500, 1000, 2000, 4000, 8000, 12000, 16000];
         
@@ -104,7 +116,6 @@
             'cyber-red', 'sky-blue', 'lime-shock', 'carbon-fiber'
         ];
 
-        // --- AUDIO ENGINE SERVICE ---
         class AudioService {
             constructor() {
                 this.context = null;
@@ -114,9 +125,6 @@
                 this.boostNode = null;
                 this.analyser = null;
                 this.eqFilters = [];
-                this.djNodes = {};
-                this.delayNode = null;
-                this.feedbackNode = null;
             }
 
             initialize(url) {
@@ -125,16 +133,12 @@
                 this.context = new AudioContextClass();
                 this.audio = new Audio(url);
                 this.audio.crossOrigin = "anonymous";
-
                 this.source = this.context.createMediaElementSource(this.audio);
                 this.analyser = this.context.createAnalyser();
                 this.analyser.fftSize = 2048;
                 this.gainNode = this.context.createGain();
 
-                // Chain Construction
                 let prev = this.source;
-
-                // 1. Super Boost (Low Shelf)
                 this.boostNode = this.context.createBiquadFilter();
                 this.boostNode.type = 'lowshelf';
                 this.boostNode.frequency.value = 150;
@@ -142,7 +146,6 @@
                 prev.connect(this.boostNode);
                 prev = this.boostNode;
 
-                // 2. EQ 10-Band
                 this.eqFilters = EQ_FREQUENCIES.map(freq => {
                     const f = this.context.createBiquadFilter();
                     f.type = 'peaking';
@@ -154,26 +157,6 @@
                     return f;
                 });
 
-                // 3. DJ Mixer
-                const low = this.context.createBiquadFilter(); low.type = 'lowshelf'; low.frequency.value = 250;
-                const mid = this.context.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1000;
-                const high = this.context.createBiquadFilter(); high.type = 'highshelf'; high.frequency.value = 4000;
-                
-                prev.connect(low); low.connect(mid); mid.connect(high);
-                prev = high;
-                this.djNodes = { low, mid, high };
-
-                // 4. Delay FX
-                this.delayNode = this.context.createDelay(1.0);
-                this.feedbackNode = this.context.createGain();
-                this.feedbackNode.gain.value = 0;
-                
-                prev.connect(this.delayNode);
-                this.delayNode.connect(this.feedbackNode);
-                this.feedbackNode.connect(this.delayNode);
-                this.delayNode.connect(this.analyser);
-
-                // 5. Output
                 prev.connect(this.analyser);
                 this.analyser.connect(this.gainNode);
                 this.gainNode.connect(this.context.destination);
@@ -188,7 +171,6 @@
 
         const audioSvc = new AudioService();
 
-        // --- HOOK ---
         const useAudioEngine = () => {
             const [state, setState] = useState({
                 isPlaying: false, volume: 70, superBoost: false,
@@ -227,23 +209,18 @@
                 let raf;
                 const dataArray = new Uint8Array(1024);
                 const timeArray = new Uint8Array(2048);
-                
                 const loop = () => {
                     audioSvc.analyser.getByteFrequencyData(dataArray);
                     audioSvc.analyser.getByteTimeDomainData(timeArray);
-                    
                     const bass = dataArray.slice(0, 15).reduce((a,b)=>a+b,0) / 15;
                     const treble = dataArray.slice(100, 200).reduce((a,b)=>a+b,0) / 100;
                     const rms = Math.sqrt(timeArray.reduce((s, v) => s + Math.pow((v-128)/128, 2), 0) / timeArray.length);
                     const vu = Math.min(100, rms * 250);
-
-                    // Dominant Freq Approximation
                     let maxV = 0, maxI = 0;
                     for(let i=0; i<dataArray.length; i++) if(dataArray[i]>maxV) { maxV=dataArray[i]; maxI=i; }
-                    
                     setState(s => ({
                         ...s,
-                        frequencyData: dataArray,
+                        frequencyData: new Uint8Array(dataArray),
                         bassLevel: (bass / 255) * 100,
                         trebleLevel: (treble / 255) * 100,
                         rpmValue: Math.min(100, rms * 400),
@@ -260,27 +237,21 @@
             return { state, togglePlay, setVolume, toggleBoost, setEQPreset };
         };
 
-        // --- COMPONENTES VISUAIS ---
-
-        const EngineValves = ({ bass, treble, color }) => {
-            const intake = (bass / 100) * 20;
-            const exhaust = (treble / 100) * 20;
-            return (
-                <div className="flex justify-center gap-12 relative z-20 mb-[-10px]">
-                    {[{ label: 'INTAKE', val: intake }, { label: 'EXHAUST', val: exhaust }].map((v, i) => (
-                        <div key={i} className="flex flex-col items-center">
-                            <div className="w-3 h-10 bg-gray-500 rounded-t relative border border-gray-700 overflow-hidden">
-                                {[...Array(5)].map((_, j) => <div key={j} className="w-full h-[1px] bg-gray-800 mt-1 transform -skew-y-12"></div>)}
-                            </div>
-                            <div className="w-12 h-3 bg-gradient-to-r from-gray-300 via-white to-gray-300 rounded-b-full shadow-lg transition-transform duration-75"
-                                 style={{ transform: `translateY(${v.val}px)`, boxShadow: `0 ${v.val}px 10px ${color}` }}>
-                            </div>
-                            <span className="mt-6 text-[8px] font-bold text-gray-500 tracking-widest">{v.label}</span>
+        const EngineValves = ({ bass, treble, color }) => (
+            <div className="flex justify-center gap-12 relative z-20 mb-[-10px]">
+                {[{ label: 'INTAKE', val: (bass / 100) * 20 }, { label: 'EXHAUST', val: (treble / 100) * 20 }].map((v, i) => (
+                    <div key={i} className="flex flex-col items-center">
+                        <div className="w-3 h-10 bg-gray-500 rounded-t relative border border-gray-700 overflow-hidden">
+                            {[...Array(5)].map((_, j) => <div key={j} className="w-full h-[1px] bg-gray-800 mt-1 transform -skew-y-12"></div>)}
                         </div>
-                    ))}
-                </div>
-            );
-        };
+                        <div className="w-12 h-3 bg-gradient-to-r from-gray-300 via-white to-gray-300 rounded-b-full shadow-lg transition-transform duration-75"
+                             style={{ transform: `translateY(${v.val}px)`, boxShadow: `0 ${v.val}px 10px ${color}` }}>
+                        </div>
+                        <span className="mt-6 text-[8px] font-bold text-gray-400 tracking-widest">{v.label}</span>
+                    </div>
+                ))}
+            </div>
+        );
 
         const EnginePistons = ({ data, isPlaying, color }) => {
             const canvasRef = useRef(null);
@@ -294,39 +265,21 @@
                     ctx.clearRect(0, 0, w, h);
                     const num = 10;
                     const pw = w / num;
-                    
                     for(let i=0; i<num; i++) {
                         const val = isPlaying ? data[Math.floor(i * (data.length/20))] || 0 : 0;
                         const travel = (val/255) * (h * 0.7);
                         const x = i * pw;
                         const y = h - travel;
-
-                        // Wall
                         ctx.fillStyle = 'rgba(0,0,0,0.5)';
                         ctx.fillRect(x+2, 0, pw-4, h);
-                        
-                        // Rod
                         ctx.fillStyle = '#333';
                         ctx.fillRect(x + pw/2 - 3, y, 6, h);
-
-                        // Head
                         const g = ctx.createLinearGradient(x, y, x+pw, y);
                         g.addColorStop(0, '#222');
                         g.addColorStop(0.5, isPlaying ? color : '#555');
                         g.addColorStop(1, '#222');
                         ctx.fillStyle = g;
                         ctx.fillRect(x+4, y-20, pw-8, 40);
-
-                        // Spark
-                        if(val > 220) {
-                            ctx.fillStyle = '#fff';
-                            ctx.shadowBlur = 15;
-                            ctx.shadowColor = color;
-                            ctx.beginPath();
-                            ctx.arc(x+pw/2, y-25, 4, 0, Math.PI*2);
-                            ctx.fill();
-                            ctx.shadowBlur = 0;
-                        }
                     }
                     raf = requestAnimationFrame(draw);
                 };
@@ -336,95 +289,11 @@
             return <canvas ref={canvasRef} width={600} height={200} className="w-full h-full" />;
         };
 
-        const ExhaustSystem = ({ intensity, color, isPlaying }) => {
-            const canvasRef = useRef(null);
-            useEffect(() => {
-                const ctx = canvasRef.current?.getContext('2d');
-                if(!ctx) return;
-                
-                let particles = [];
-                let raf;
-
-                const draw = () => {
-                    const w = ctx.canvas.width;
-                    const h = ctx.canvas.height;
-                    ctx.clearRect(0,0,w,h);
-
-                    const pipeY = h - 40;
-                    const pipes = [w*0.1, w*0.9];
-
-                    // Draw Pipes
-                    pipes.forEach((x, i) => {
-                        const isLeft = i===0;
-                        ctx.save();
-                        const grad = ctx.createLinearGradient(x-30, 0, x+30, 0);
-                        grad.addColorStop(0, '#111'); grad.addColorStop(0.5, '#fff'); grad.addColorStop(1, '#111');
-                        ctx.fillStyle = grad;
-                        ctx.beginPath();
-                        if(isLeft) { ctx.moveTo(x+20, h); ctx.lineTo(x+60, h); ctx.lineTo(x+50, pipeY); ctx.lineTo(x+10, pipeY); }
-                        else { ctx.moveTo(x-20, h); ctx.lineTo(x-60, h); ctx.lineTo(x-50, pipeY); ctx.lineTo(x-10, pipeY); }
-                        ctx.fill();
-                        
-                        // Tip Hole
-                        ctx.fillStyle = '#000';
-                        ctx.beginPath();
-                        ctx.ellipse(x + (isLeft ? 30 : -30), pipeY, 25, 10, 0, 0, Math.PI*2);
-                        ctx.fill();
-                        ctx.lineWidth=2; ctx.strokeStyle='#555'; ctx.stroke();
-                        ctx.restore();
-
-                        // Spawn Smoke
-                        if(isPlaying && intensity > 30) {
-                            for(let j=0; j<Math.floor(intensity/20); j++) {
-                                particles.push({
-                                    x: x + (isLeft?30:-30) + (Math.random()-0.5)*20,
-                                    y: pipeY,
-                                    vx: (Math.random()*2+0.5) * (isLeft?-1:1),
-                                    vy: -Math.random()*4 - 1,
-                                    life: 1.0,
-                                    size: Math.random()*10+5,
-                                    color: color
-                                });
-                            }
-                        }
-                    });
-
-                    // Draw Particles
-                    for(let i=particles.length-1; i>=0; i--) {
-                        let p = particles[i];
-                        p.x += p.vx; p.y += p.vy; p.size += 0.5; p.life -= 0.015;
-                        p.vx *= 0.95;
-                        
-                        if(p.life <= 0) { particles.splice(i,1); continue; }
-                        
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-                        if(p.life > 0.8) {
-                            ctx.fillStyle = p.color;
-                            ctx.globalAlpha = p.life * 0.8;
-                        } else {
-                            ctx.fillStyle = '#ddd';
-                            ctx.globalAlpha = p.life * 0.3;
-                        }
-                        ctx.fill();
-                        ctx.globalAlpha = 1;
-                    }
-
-                    raf = requestAnimationFrame(draw);
-                };
-                draw();
-                return () => cancelAnimationFrame(raf);
-            }, [intensity, color, isPlaying]);
-            
-            return <canvas ref={canvasRef} width={800} height={400} className="w-full h-full pointer-events-none" />;
-        };
-
         const AnalogGauge = ({ value, max, label, unit, color }) => {
             const pct = Math.min(1, Math.max(0, value/max));
             const deg = -135 + (pct * 270);
             return (
                 <div className="w-24 h-24 rounded-full bg-black border-4 border-gray-700 relative shadow-inner flex items-center justify-center">
-                    {/* Ticks */}
                     <svg className="absolute inset-0 w-full h-full p-1">
                         {[...Array(11)].map((_,i) => (
                             <line key={i} x1="50%" y1="10%" x2="50%" y2={i%5===0?"20%":"15%"} stroke={i%5===0?"#fff":"#555"} strokeWidth={i%5===0?2:1} transform={`rotate(${-135 + i*27} 48 48)`} />
@@ -434,9 +303,8 @@
                         <span className="text-[8px] text-gray-500 font-bold">{label}</span>
                         <span className="text-xs font-mono font-bold" style={{color}}>{Math.round(value)}{unit}</span>
                     </div>
-                    {/* Needle */}
                     <div className="absolute w-full h-full transition-transform duration-100 ease-out" style={{ transform: `rotate(${deg}deg)` }}>
-                        <div className="absolute top-2 left-1/2 w-1 h-1/2 origin-bottom -translate-x-1/2 rounded-full shadow-[0_0_5px_currentColor]" style={{ backgroundColor: color }}></div>
+                        <div className="absolute top-2 left-1/2 w-1 h-1/2 origin-bottom -translate-x-1/2 rounded-full" style={{ backgroundColor: color }}></div>
                     </div>
                 </div>
             );
@@ -447,7 +315,7 @@
                 {[...Array(20)].map((_,i) => {
                     const active = level > (i/20)*100;
                     const col = i>15 ? 'bg-red-500' : i>10 ? 'bg-yellow-400' : 'bg-cyan-500';
-                    return <div key={i} className={`flex-1 w-full ${active ? col : 'bg-gray-800 opacity-20'} transition-opacity duration-75`}></div>
+                    return <div key={i} className={`flex-1 w-full ${active ? col : 'bg-gray-800 opacity-20'}`}></div>
                 })}
             </div>
         );
@@ -456,17 +324,18 @@
             const rot = -140 + (value/100)*280;
             const handleMove = (e) => {
                 const rect = e.target.getBoundingClientRect();
-                const y = e.clientY || e.touches[0].clientY;
+                const y = e.clientY || (e.touches && e.touches[0].clientY);
+                if(!y) return;
                 const dy = (rect.top + rect.height/2) - y;
-                onChange(Math.min(100, Math.max(0, value + dy*0.1)));
+                onChange(Math.min(100, Math.max(0, value + dy*0.5)));
             };
             return (
-                <div className="w-48 h-48 rounded-full bg-gray-900 border-4 border-gray-700 relative flex items-center justify-center shadow-2xl"
+                <div className="w-48 h-48 rounded-full bg-gray-900 border-4 border-gray-700 relative flex items-center justify-center shadow-2xl cursor-ns-resize"
                      onMouseMove={(e) => e.buttons===1 && handleMove(e)}
                      onTouchMove={handleMove}>
-                    <div className="w-40 h-40 rounded-full bg-[conic-gradient(from_0deg,#222,#111,#333,#111,#222)] shadow-[0_5px_10px_black]"
+                    <div className="w-40 h-40 rounded-full bg-[conic-gradient(from_0deg,#222,#111,#333,#111,#222)]"
                          style={{ transform: `rotate(${rot}deg)` }}>
-                         <div className="absolute top-2 left-1/2 w-4 h-8 -translate-x-1/2 rounded bg-white/80 shadow-[0_0_10px_currentColor]" style={{ color }}></div>
+                         <div className="absolute top-2 left-1/2 w-4 h-8 -translate-x-1/2 rounded bg-white/80 shadow-[0_0_10px_white]"></div>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <span className="text-2xl font-mono font-bold" style={{color}}>{Math.round(value)}</span>
@@ -475,12 +344,11 @@
             );
         };
 
-        const LCDDisplay = ({ isPlaying, theme, eq, track, color }) => {
+        const LCDDisplay = ({ isPlaying, theme, eq, color }) => {
             const [time, setTime] = useState(new Date());
             useEffect(() => { const t = setInterval(()=>setTime(new Date()),1000); return ()=>clearInterval(t); }, []);
             return (
                 <div className="w-full bg-black border-4 border-gray-700 rounded p-2 relative overflow-hidden font-mono text-xs shadow-[inset_0_0_20px_black]">
-                    <div className="absolute inset-0 bg-green-900/10 pointer-events-none"></div>
                     <div className="flex justify-between border-b border-gray-800 pb-1 mb-1">
                         <span className="text-lg font-bold" style={{color}}>{time.toLocaleTimeString()}</span>
                         <span className="text-gray-500 font-bold">{time.toLocaleDateString()}</span>
@@ -491,21 +359,20 @@
                         <div><span className="text-gray-600 block">STATUS</span><span className={isPlaying?'text-green-500':'text-red-500'}>{isPlaying?'RUNNING':'OFF'}</span></div>
                         <div className="text-right"><span className="text-green-600 font-bold animate-pulse">SYSTEM OK</span></div>
                     </div>
-                    <div className="mt-2 bg-gray-900 p-1 overflow-hidden whitespace-nowrap">
-                        <div className="animate-[scanline_10s_linear_infinite] inline-block w-full text-center text-white">
-                            {isPlaying ? "INTERCONTINENTAL V10 RADIO - ON AIR" : "INSERT KEY TO START"}
+                    <div className="mt-2 bg-gray-900 p-1 overflow-hidden">
+                        <div className="animate-[scanline_10s_linear_infinite] whitespace-nowrap text-center text-white">
+                            {isPlaying ? "INTERCONTINENTAL V10 RADIO - ON AIR" : "PRESS START BUTTON"}
                         </div>
                     </div>
                 </div>
             );
         };
 
-        // --- APP PRINCIPAL ---
         const App = () => {
             const { state, togglePlay, setVolume, toggleBoost, setEQPreset } = useAudioEngine();
             const [themeIdx, setThemeIdx] = useState(1);
             const [eqName, setEqName] = useState('FLAT');
-            const [color, setColor] = useState('');
+            const [color, setColor] = useState('hsl(137, 90%, 55%)');
 
             useEffect(() => {
                 const hue = (themeIdx * 137) % 360;
@@ -513,111 +380,46 @@
             }, [themeIdx]);
 
             return (
-                <div className="w-full h-screen bg-[#080808] flex flex-col items-center overflow-y-auto custom-scrollbar relative font-orbitron select-none text-gray-200">
-                    
-                    {/* Background */}
-                    <div className="fixed inset-0 pointer-events-none opacity-20" 
-                         style={{ background: `radial-gradient(circle at 50% 50%, ${color}, transparent 80%)` }}></div>
-
-                    {/* Header */}
-                    <div className="w-full max-w-3xl mt-8 mb-4 flex items-center justify-between px-4 z-20">
+                <div className="min-h-screen flex flex-col items-center py-8 px-4 font-orbitron text-gray-200">
+                    <div className="w-full max-w-3xl flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
-                            <i className="fas fa-cogs text-3xl animate-[spin_10s_linear_infinite]" style={{color}}></i>
+                            <i className="fas fa-microchip text-3xl animate-pulse" style={{color}}></i>
                             <div>
-                                <h1 className="text-2xl font-black italic tracking-widest leading-none">INTERCONTINENTAL <span style={{color}}>V10</span></h1>
+                                <h1 className="text-2xl font-black italic tracking-widest">INTERCONTINENTAL <span style={{color}}>V10</span></h1>
                                 <span className="text-[10px] text-gray-500 tracking-[0.4em] block">MOTOR RADIO SYSTEM</span>
                             </div>
                         </div>
-                        <div className={`px-2 py-1 border rounded text-[10px] font-bold ${state.isPlaying ? 'border-green-500 text-green-500' : 'border-red-500 text-red-500'}`}>
-                            {state.isPlaying ? 'LIVE' : 'OFF'}
-                        </div>
+                        <button onClick={togglePlay} className={`px-6 py-2 rounded-full font-bold transition-all shadow-lg ${state.isPlaying ? 'bg-red-600 text-white shadow-red-900/50' : 'bg-green-600 text-white shadow-green-900/50'}`}>
+                            {state.isPlaying ? 'STOP ENGINE' : 'START ENGINE'}
+                        </button>
                     </div>
 
-                    {/* Engine Block */}
-                    <div className="relative w-full max-w-[700px] flex flex-col items-center mb-24 z-10">
+                    <div className="w-full max-w-[700px] bg-[#151515] rounded-3xl border-4 overflow-hidden shadow-2xl relative" style={{ borderColor: color }}>
+                        <div className="p-4 bg-black/40"><EngineValves bass={state.bassLevel} treble={state.trebleLevel} color={color} /></div>
+                        <div className="p-4 border-y-4 border-gray-800" style={{borderColor: color}}><LCDDisplay isPlaying={state.isPlaying} theme={THEMES[themeIdx]} eq={eqName} color={color} /></div>
+                        <div className="h-40 bg-gray-900/80"><EnginePistons data={state.frequencyData} isPlaying={state.isPlaying} color={color} /></div>
                         
-                        {/* Top Section */}
-                        <div className="w-full max-w-lg mb-[-5px] z-20">
-                            <EngineValves bass={state.bassLevel} treble={state.trebleLevel} color={color} />
-                            <div className="mt-2 h-32">
-                                <LCDDisplay isPlaying={state.isPlaying} theme={THEMES[themeIdx].replace(/-/g,' ')} eq={eqName} color={color} />
-                            </div>
-                        </div>
-
-                        {/* Main Chassis */}
-                        <div className="w-full bg-[#151515] rounded-3xl border-4 mt-4 relative overflow-hidden shadow-2xl transition-colors duration-500"
-                             style={{ borderColor: color, boxShadow: `0 0 50px ${color}20` }}>
-                            
-                            {/* Pistons */}
-                            <div className="h-48 bg-gradient-to-b from-gray-900 to-[#151515] border-b-4 border-gray-800 p-4 relative" style={{borderBottomColor: color}}>
-                                <EnginePistons data={state.frequencyData} isPlaying={state.isPlaying} color={color} />
-                            </div>
-
-                            {/* Controls */}
-                            <div className="p-6 relative">
-                                <div className="absolute inset-0 brushed-metal opacity-20 pointer-events-none"></div>
-                                
-                                <div className="absolute left-0 top-0 bottom-0 z-30"><TransmissionBar level={state.vuLeft} /></div>
-                                <div className="absolute right-0 top-0 bottom-0 z-30"><TransmissionBar level={state.vuRight} right /></div>
-
-                                <div className="relative z-20 flex flex-col md:flex-row items-center justify-center gap-8">
-                                    <div className="flex flex-col gap-4">
-                                        <AnalogGauge value={state.rpmValue * 80} max={8000} label="RPM" unit="" color="#ef4444" />
-                                        <AnalogGauge value={state.bassLevel} max={100} label="BOOST" unit=" PSI" color={color} />
-                                    </div>
-
-                                    <div className="flex flex-col items-center">
-                                        <BigKnob value={state.volume} onChange={setVolume} color={color} />
-                                        <div className="flex gap-2 mt-6">
-                                            {Object.keys(EQ_PRESETS).slice(0,4).map(k => (
-                                                <button key={k} onClick={()=>{setEQPreset(EQ_PRESETS[k]); setEqName(k)}} 
-                                                    className={`px-2 py-1 text-[9px] border rounded hover:bg-white/10 ${eqName===k ? 'bg-white text-black':'text-gray-400'}`}>
-                                                    {k}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col items-center gap-6">
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-[8px] font-bold text-gray-500 mb-1">NITROUS</span>
-                                            <button onClick={toggleBoost} className={`w-12 h-16 border-2 rounded flex flex-col justify-end items-center pb-2 relative overflow-hidden transition-all ${state.superBoost ? 'border-red-500 bg-red-900/30 shadow-[0_0_15px_red]' : 'border-gray-600 bg-gray-800'}`}>
-                                                <div className={`absolute inset-0 bg-red-600 transition-transform origin-top ${state.superBoost?'scale-y-0':'scale-y-100'}`}>
-                                                    <span className="absolute bottom-1 w-full text-center text-[8px] font-bold text-black">SAFE</span>
-                                                </div>
-                                                <span className="text-[8px] font-bold text-white z-10">NOS</span>
-                                            </button>
-                                        </div>
-                                        <AnalogGauge value={state.dominantFreq} max={5000} label="FREQ" unit="Hz" color="#3b82f6" />
-                                    </div>
+                        <div className="p-8 flex flex-col md:flex-row items-center justify-around gap-8 relative">
+                             <div className="absolute left-0 top-0 bottom-0"><TransmissionBar level={state.vuLeft} /></div>
+                             <div className="absolute right-0 top-0 bottom-0"><TransmissionBar level={state.vuRight} right /></div>
+                             
+                             <div className="flex flex-col gap-4">
+                                <AnalogGauge value={state.rpmValue * 80} max={8000} label="RPM" unit="" color="#ef4444" />
+                                <AnalogGauge value={state.bassLevel} max={100} label="BOOST" unit=" PSI" color={color} />
+                             </div>
+                             
+                             <BigKnob value={state.volume} onChange={setVolume} color={color} />
+                             
+                             <div className="flex flex-col gap-4">
+                                <button onClick={toggleBoost} className={`w-16 h-16 rounded-lg border-2 font-bold text-[10px] transition-all ${state.superBoost ? 'bg-red-600 border-white shadow-[0_0_15px_red]' : 'bg-gray-800 border-gray-600'}`}>NOS</button>
+                                <div className="flex gap-1">
+                                    <button onClick={() => setThemeIdx(i => (i+1)%THEMES.length)} className="p-2 bg-gray-800 border border-gray-600 rounded">🎨</button>
+                                    <select onChange={(e) => {setEQPreset(EQ_PRESETS[e.target.value]); setEqName(e.target.value)}} className="bg-gray-800 text-[10px] border border-gray-600 p-1 rounded">
+                                        {Object.keys(EQ_PRESETS).map(k => <option key={k} value={k}>{k}</option>)}
+                                    </select>
                                 </div>
-                            </div>
-
-                            {/* Bottom Console */}
-                            <div className="bg-black border-t-4 border-gray-800 p-4 flex justify-between items-center relative z-40">
-                                <div className="flex gap-2">
-                                     <button onClick={() => setThemeIdx((i)=>(i-1+THEMES.length)%THEMES.length)} className="w-10 h-10 bg-gray-900 border border-gray-700 rounded text-gray-400 hover:text-white"><i className="fas fa-chevron-left"></i></button>
-                                     <button onClick={() => setThemeIdx((i)=>(i+1)%THEMES.length)} className="w-10 h-10 bg-gray-900 border border-gray-700 rounded text-gray-400 hover:text-white"><i className="fas fa-chevron-right"></i></button>
-                                </div>
-                                
-                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                                    <button onClick={togglePlay} className={`w-24 h-24 rounded-full border-4 flex flex-col items-center justify-center shadow-xl transition-all active:scale-95 ${state.isPlaying ? 'bg-gray-800 border-gray-600' : 'bg-gradient-to-b from-red-600 to-red-800 border-red-900'}`}>
-                                        <span className="text-white font-black text-lg drop-shadow-md">{state.isPlaying ? 'STOP' : 'START'}</span>
-                                        <span className="text-[8px] text-white/70">ENGINE</span>
-                                    </button>
-                                </div>
-
-                                <div className="w-20"></div> {/* Spacer */}
-                            </div>
-                        </div>
-
-                        {/* Exhaust Smoke Overlay */}
-                        <div className="absolute bottom-0 w-full h-[500px] z-50 pointer-events-none flex justify-center">
-                             <div className="w-full h-full max-w-[800px]">
-                                <ExhaustSystem intensity={state.bassLevel} color={color} isPlaying={state.isPlaying} />
                              </div>
                         </div>
-
                     </div>
                 </div>
             );
