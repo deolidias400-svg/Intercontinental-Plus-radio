@@ -1,358 +1,756 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <title>INTERCONTINENTAL • MULTI-ENGINE HUB • 2nd ANNIVERSARY</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intercontinental IA - Aurora Supernova</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --gold-bright: #fff3a0;
+            --gold-main: #ffd700;
+            --gold-deep: #b8860b;
+            --gold-dark: #6b4e00;
+            --neon-blue: #00e5ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --neon-red: #ff3333;
+        }
 
         body {
-            height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle at center, #222 0%, #000 100%);
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            padding: 40px 10px 100px 10px; /* Padding bottom para o ticker fixed */
+        }
+
+        /* --- COMPONENTES COMPARTILHADOS --- */
+        .premium-frame {
+            width: 100%;
+            max-width: 1150px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-main), var(--gold-bright), var(--gold-main), var(--gold-dark));
+            padding: 15px;
+            border-radius: 60px;
+            box-shadow: 0 0 100px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.4);
+            margin: 0 auto 50px auto;
+        }
+
+        .deck {
+            background: #0a0a0a;
+            border-radius: 50px;
+            padding: 30px;
+            box-shadow: inset 0 0 60px #000;
+            border: 3px solid var(--gold-deep);
+        }
+
+        .lcd {
+            background: rgba(20, 15, 0, 0.95);
+            color: var(--gold-main);
+            font-family: 'Share Tech Mono';
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid var(--gold-main);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
+            text-shadow: 0 0 8px var(--gold-main);
+        }
+
+        /* Separador visual entre módulos */
+        .module-separator {
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, #000, #090016, #000);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: white;
-            overflow: hidden;
-            text-align: center;
-            transition: 0.5s;
+            margin-bottom: 50px;
+        }
+        .separator-line {
+            width: 1px;
+            height: 80px;
+            background: gradient(to bottom, var(--gold-main), transparent);
+            margin-top: 15px;
         }
 
-        /* Status Bar */
-        .status-bar {
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            font-size: 14px;
-            z-index: 10;
-        }
-        #date-time, #listener-count { color: #FFD700; text-shadow: 0 0 10px #FFD700; }
-        #status-light { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-left: 5px; }
+        /* --- ESTILOS DO PLAYER V3 --- */
+        #player-module .vu-bar { width: 100%; height: 14px; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid var(--gold-dark); }
+        #player-module .vu-fill { height: 100%; width: 0%; background: linear-gradient(to right, var(--neon-green), var(--gold-main), #ff0000); box-shadow: 0 0 15px currentColor; transition: width .08s linear; }
+        #player-module .gauge { width: 150px; height: 80px; border: 3px solid var(--gold-main); border-bottom: 0; border-radius: 100px 100px 10px 10px; position: relative; background: #000; box-shadow: inset 0 10px 20px rgba(255,215,0,0.1); }
+        #player-module .needle { position: absolute; bottom: 5px; left: 50%; width: 3px; height: 65px; transform-origin: bottom center; background: #fff; box-shadow: 0 0 10px #fff; transition: transform 0.1s ease-out; z-index: 5; }
+        #player-module .control-btn { background: linear-gradient(180deg, #333, #111); border: 2px solid var(--gold-deep); border-radius: 15px; font-weight: 900; transition: all 0.2s; box-shadow: 0 5px 0 var(--gold-dark); color: #fff;}
+        #player-module .control-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
+        #player-module .eq-btn { background: #000; border: 1px solid #444; padding: 12px 4px; border-radius: 8px; font-size: 10px; font-weight: 900; color: #777; transition: all 0.2s; }
+        #player-module .eq-btn.active { background: var(--gold-main); color: #000; box-shadow: 0 0 20px var(--gold-main); border-color: var(--gold-main); }
+        #player-module .knob { width: 160px; height: 160px; border-radius: 50%; background: conic-gradient(from 0deg, var(--gold-dark), var(--gold-main), var(--gold-dark), var(--gold-main), var(--gold-dark)); border: 8px solid #111; box-shadow: 0 15px 40px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; cursor: ns-resize; }
+        #player-module .knob span { font-size: 36px; font-weight: 900; color: #000; }
+        #player-module .theme-btn { background: #111; border: 1px solid var(--gold-dark); color: var(--gold-main); border-radius: 8px; font-weight: bold; transition: all 0.1s; }
+        #player-module .theme-btn:hover { background: var(--gold-main); color: #000; }
+        #player-module .link-card { transition: all 0.3s; border-width: 2px; text-transform: uppercase; font-weight: 900; font-size: 10px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; }
+        #player-module .link-card:hover { transform: translateY(-3px) scale(1.05); filter: brightness(1.2); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        /* O SOL (Layout Container) */
-        .layout-container {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: visible;
-            background: radial-gradient(circle, #ffffff 0%, #fff6a0 12%, #ffd700 25%, #ffae00 45%, #ff4500 65%, #120010 100%);
-            box-shadow: 0 0 100px #ffd700, 0 0 200px #ff8c00;
-            animation: sunPulse 4s infinite alternate;
-            z-index: 5;
-        }
+        /* --- ESTILOS DO GENIUS (Circular) --- */
+        #genius-module .genius-frame { max-width: 650px; border-radius: 50%; aspect-ratio: 1/1; }
+        #genius-module .genius-deck { border-radius: 50%; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 30px; }
+        #genius-module .genius-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 100%; }
+        #genius-module .genius-btn { border-radius: 40px; transition: all 0.1s; cursor: pointer; border: 6px solid #000; opacity: 0.3; filter: grayscale(0.7); }
+        #genius-module .genius-btn.active { opacity: 1; filter: grayscale(0); box-shadow: 0 0 50px currentColor; transform: scale(0.97); }
+        #genius-module #green { background: var(--neon-green); color: var(--neon-green); border-radius: 300px 50px 50px 50px; }
+        #genius-module #red { background: var(--neon-red); color: var(--neon-red); border-radius: 50px 300px 50px 50px; }
+        #genius-module #yellow { background: var(--gold-main); color: var(--gold-main); border-radius: 50px 50px 50px 300px; }
+        #genius-module #blue { background: var(--neon-blue); color: var(--neon-blue); border-radius: 50px 50px 300px 50px; }
+        #genius-module .center-console { position: absolute; width: 220px; height: 220px; background: #0a0a0a; border-radius: 50%; border: 6px solid var(--gold-main); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 40px #000; z-index: 10; }
+        #genius-module .start-btn { background: linear-gradient(180deg, var(--gold-main), var(--gold-dark)); color: #000; font-weight: 900; padding: 8px 20px; border-radius: 20px; text-transform: uppercase; font-size: 11px; transition: all 0.2s; box-shadow: 0 4px 0 var(--gold-dark); border: 1px solid var(--gold-dark); }
+        #genius-module .start-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--gold-dark); }
+        #genius-module .stop-btn { background: linear-gradient(180deg, #333, #111); color: var(--neon-red); font-weight: 900; padding: 5px 15px; border-radius: 20px; text-transform: uppercase; font-size: 9px; border: 1px solid #333; margin-top: 8px; transition: all 0.2s; }
+        #genius-module .stop-btn:active { transform: translateY(1px); opacity: 0.8; }
 
-        @keyframes sunPulse {
-            0% { filter: saturate(1.2) brightness(1); transform: scale(1); }
-            100% { filter: saturate(1.8) brightness(1.2); transform: scale(1.02); }
-        }
+        /* --- ESTILOS DO JOGO 3: FREQUENCY TUNER --- */
+        #tuner-module .tuner-deck { padding: 40px; }
+        #tuner-module .tuner-display { background: rgba(0, 20, 0, 0.95); border: 2px solid var(--neon-green); color: var(--neon-green); font-family: 'Share Tech Mono'; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); text-align: center; position: relative; overflow: hidden;}
+        #tuner-module .tuner-display::after { content:""; position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; }
+        #tuner-module .tuner-knob { width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(from 0deg, #222, #444, #222, #444, #222); border: 6px solid var(--gold-deep); box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; cursor: ns-resize; transition: transform 0.1s; }
+        #tuner-module .tuner-knob::before { content:""; position: absolute; top: 10px; width: 4px; height: 30px; background: var(--neon-red); border-radius: 2px; box-shadow: 0 0 10px var(--neon-red); }
+        #tuner-module .signal-bar { width: 100%; height: 10px; background: #000; border-radius: 5px; border: 1px solid var(--neon-green); overflow: hidden; position: relative; }
+        #tuner-module .signal-fill { height: 100%; width: 0%; background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); transition: width 0.1s linear; }
+        #tuner-module .target-marker { position: absolute; top: -5px; height: 20px; width: 2px; background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); z-index: 5; }
 
-        .flame {
-            position: absolute;
-            width: 140%; height: 140%;
-            border-radius: 50%;
-            background: conic-gradient(transparent, rgba(255,200,0,.4), rgba(255,80,0,.6), transparent);
-            animation: spin 8s linear infinite;
-            filter: blur(20px);
-            z-index: 1;
-        }
+        /* --- TICKER NEWS --- */
+        .ticker-bar { width: 100%; background: #000; color: #fff; height: 55px; display: flex; align-items: center; position: fixed; bottom: 0; left: 0; overflow: hidden; border-top: 3px solid #f00; z-index: 999; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        .ticker-move { display: flex; white-space: nowrap; animation: moveTicker 80s linear infinite; }
+        @keyframes moveTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        canvas { width: 100%; height: 100%; border-radius: 50%; z-index: 6; }
-
-        /* Painel de Controle IA */
-        .ai-panel {
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #FFD700;
-            padding: 15px;
-            border-radius: 15px;
-            width: 380px;
-            z-index: 10;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-        }
-
-        #ai-display {
-            font-style: italic;
-            color: #FFD700;
-            margin-bottom: 10px;
-            min-height: 45px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .ai-input-group { display: flex; gap: 5px; }
-        #ai-input {
-            flex: 1;
-            background: #111;
-            border: 1px solid #FFD700;
-            color: white;
-            padding: 8px;
-            border-radius: 5px;
-        }
-
-        .main-buttons { margin-top: 15px; display: flex; gap: 10px; justify-content: center; }
-        button {
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        #btn-play { background: #00ff00; color: #000; }
-        #btn-stop { background: #ff0000; color: #fff; }
-        #btn-boost { background: #555; color: #fff; }
-        #btn-boost.active { background: #ff00ff; box-shadow: 0 0 20px #ff00ff; }
-
-        /* Efeito Supernova */
-        body.supernova { animation: shake 0.1s infinite; background: radial-gradient(circle, #200, #000); }
-        @keyframes shake { 0%, 100% { transform: translate(0); } 50% { transform: translate(2px, -2px); } }
+        /* Custom Scroll para Engine Finish */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #000; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--gold-main); }
     </style>
 </head>
-<body id="main-body">
+<body>
 
-    <div class="status-bar">
-        <div id="date-time">--/--/---- 00:00:00</div>
-        <div>SISTEMA: <span id="status-text">OFFLINE</span><span id="status-light" style="background: red;"></span></div>
-        <div id="listener-count">🎧 OUVINTES: 0</div>
-    </div>
+<div id="player-module">
+    <!-- MÓDULO 1: PLAYER V3 COMPLETO -->
+    <div class="premium-frame" id="frame">
+        <div class="deck">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                <div>
+                    <h1 class="text-5xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-white to-yellow-600 drop-shadow-lg opacity-100">INTERCONTINENTAL</h1>
+                    <p class="text-[11px] tracking-[0.8em] text-yellow-500/50 font-bold uppercase opacity-100">Premium Digital Engine V3</p>
+                </div>
+                <div class="lcd w-full md:w-80">
+                    <div class="flex justify-between border-b border-yellow-900/50 pb-2 mb-2">
+                        <span id="clockDisplay" class="text-3xl font-bold">00:00:00</span>
+                        <span id="dateDisplay" class="text-xs self-end opacity-70">--/--/----</span>
+                    </div>
+                    <div class="flex justify-between text-[11px] font-black uppercase">
+                        <span id="statusTxt">ENGINE: READY</span>
+                        <span id="modeTxt">STOCK MODE</span>
+                    </div>
+                </div>
+            </div>
 
-    <div class="layout-container">
-        <div class="flame"></div>
-        <canvas id="spectrum"></canvas>
-    </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <!-- Coluna Esq: VUs e Gauges (3 AGULHAS) -->
+                <div class="lg:col-span-3 flex flex-col gap-6 order-2 lg:order-1">
+                    <div class="bg-black/50 p-4 rounded-3xl border border-yellow-500/20">
+                        <div class="vu-bar mb-2"><div id="vu1" class="vu-fill" style="background:var(--neon-blue)"></div></div>
+                        <div class="vu-bar mb-2"><div id="vu2" class="vu-fill" style="background:var(--neon-pink)"></div></div>
+                        <div class="vu-bar"><div id="vu3" class="vu-fill" style="background:var(--neon-green)"></div></div>
+                    </div>
+                    <div class="flex flex-wrap lg:flex-col items-center justify-center gap-4">
+                        <!-- GAUGES COM 3 AGULHAS -->
+                        <div class="gauge">
+                            <div id="n1-L" class="needle"></div> <!-- Esquerdo (Branco) -->
+                            <div id="n1-R" class="needle" style="background:var(--neon-blue); filter:blur(1px); opacity:0.6;"></div> <!-- Direito (Blue) -->
+                            <div id="n1-S" class="needle" style="background:var(--neon-pink); width:4px; height:70px; filter:drop-shadow(0 0 5px var(--neon-pink))"></div> <!-- SNUCE (Pink) -->
+                            <p class="absolute bottom-1 w-full text-center text-[10px] text-yellow-500 font-black uppercase z-10">Pressure</p>
+                        </div>
+                        <div class="gauge">
+                            <div id="n2-L" class="needle"></div>
+                            <div id="n2-R" class="needle" style="background:var(--neon-blue); filter:blur(1px); opacity:0.6;"></div>
+                            <div id="n2-S" class="needle" style="background:var(--neon-pink); width:4px; height:70px; filter:drop-shadow(0 0 5px var(--neon-pink))"></div>
+                            <p class="absolute bottom-1 w-full text-center text-[10px] text-yellow-500 font-black uppercase z-10">RPM / Snuce</p>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="ai-panel">
-        <div id="ai-display">Núcleo Ciborgue aguardando inicialização...</div>
-        <div class="ai-input-group">
-            <input type="text" id="ai-input" placeholder="Converse com a IA...">
-            <button onclick="processAI()" style="background:#FFD700; color:#000; padding: 8px;">ENVIAR</button>
+                <!-- Coluna Central: Visualizer, Controls, EQ -->
+                <div class="lg:col-span-6 flex flex-col gap-6 order-1 lg:order-2">
+                    <div class="relative bg-black rounded-3xl border-2 border-yellow-500/30 overflow-hidden">
+                        <canvas id="engine-visualizer" height="300" class="w-full"></canvas>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <button id="playBtn" class="control-btn py-6 text-green-400 border-green-500">START</button>
+                        <button id="pauseBtn" class="control-btn py-6 text-red-400 border-red-500">STOP</button>
+                        <button id="muteBtn" class="control-btn py-6 text-blue-400 border-blue-500">MUTE</button>
+                        <button id="nitroBtn" class="control-btn nitro-btn py-6 tracking-wider">NITRO</button>
+                    </div>
+                    <div class="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                        <button class="eq-btn active" onclick="setEqMode('STOCK', this)">STOCK</button>
+                        <button class="eq-btn" onclick="setEqMode('ECO', this)">ECO</button>
+                        <button class="eq-btn" onclick="setEqMode('SPORT', this)">SPORT</button>
+                        <button class="eq-btn" onclick="setEqMode('CITY', this)">CITY</button>
+                        <button class="eq-btn" onclick="setEqMode('TURBO', this)">TURBO</button>
+                        <button class="eq-btn" onclick="setEqMode('VOICE', this)">VOICE</button>
+                        <button class="eq-btn" onclick="setEqMode('NIGHT', this)">NIGHT</button>
+                        <button class="eq-btn text-red-500 border-red-900" onclick="setEqMode('POWER', this)">POWER</button>
+                    </div>
+                </div>
+
+                <!-- Coluna Dir: Volume e Themes -->
+                <div class="lg:col-span-3 flex flex-col items-center gap-8 order-3">
+                    <div class="flex flex-col items-center">
+                        <div class="knob" id="knobControl"><span id="volDisplay">80</span></div>
+                        <p class="text-[10px] font-black text-yellow-500 mt-4 tracking-widest uppercase opacity-100">Wheel Volume</p>
+                    </div>
+                    <div class="w-full bg-black/60 p-5 rounded-3xl border border-yellow-500/20">
+                        <p class="text-[9px] text-center mb-3 text-yellow-500/50 uppercase tracking-[0.3em] font-bold opacity-100">Engine Finish</p>
+                        <div class="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto p-1 custom-scroll theme-grid" id="theme-grid">
+                            <!-- Gerado via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ecosystem -->
+            <div class="mt-12 pt-8 border-t border-yellow-500/20 link-ecosystem">
+                <p class="text-center text-[10px] tracking-[0.5em] text-yellow-500 mb-6 font-bold uppercase opacity-100">Station Ecosystem</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <a href="https://intercontinental-web-radio.webnode.page/contato/" target="_blank" class="link-card border-blue-500 text-blue-400 bg-blue-500/10 opacity-100">Contato</a>
+                    <a href="https://deolidias2000.blogspot.com/2025/02/as-tendencias-musicais-que-estao.html" target="_blank" class="link-card border-orange-500 text-orange-400 bg-orange-500/10 opacity-100">Tendências</a>
+                    <a href="https://www.youtube.com/@RadioWebintercontinental" target="_blank" class="link-card border-red-600 text-red-500 bg-red-600/10 opacity-100">YouTube</a>
+                    <a href="https://sites.google.com/view/dynac-x-play-intercontinental/in%C3%ADcio" target="_blank" class="link-card border-purple-500 text-purple-400 bg-purple-500/10 opacity-100">Dynac X-Play</a>
+                    <a href="https://sites.google.com/view/vox-i-a/in%C3%ADcio" target="_blank" class="link-card border-green-500 text-green-400 bg-green-500/10 opacity-100">Vox I.A</a>
+                    <a href="https://sites.google.com/view/pandora-e-euterpe/in%C3%ADcio" target="_blank" class="link-card border-pink-500 text-pink-400 bg-pink-500/10 opacity-100">Pandora</a>
+                </div>
+            </div>
         </div>
-        <div class="main-buttons">
-            <button id="btn-play">INICIAR</button>
-            <button id="btn-stop">PARAR</button>
-            <button id="btn-boost">SUPERNOVA</button>
+    </div>
+</div>
+
+<div class="module-separator">
+    <div class="text-yellow-500 font-bold text-xs tracking-[1em] uppercase">Memory Unit</div>
+    <div class="separator-line"></div>
+</div>
+
+<div id="genius-module">
+    <!-- MÓDULO 2: GENIUS CLÁSSICO CIRCULAR -->
+    <div class="premium-frame genius-frame">
+        <div class="deck genius-deck">
+            <div class="genius-grid">
+                <div id="green" class="genius-btn" onclick="geniusUserClick('green')"></div>
+                <div id="red" class="genius-btn" onclick="geniusUserClick('red')"></div>
+                <div id="yellow" class="genius-btn" onclick="geniusUserClick('yellow')"></div>
+                <div id="blue" class="genius-btn" onclick="geniusUserClick('blue')"></div>
+            </div>
+
+            <div class="center-console">
+                <h2 class="text-[10px] text-yellow-500 font-bold mb-1 tracking-widest uppercase opacity-100">Memory Sync</h2>
+                <div class="lcd px-4 py-1 mb-3 border-gold-main/60 shadow-xl">
+                    <div class="text-[8px] opacity-70 font-bold">SCORE</div>
+                    <span id="geniusScore" class="text-4xl font-bold">00</span>
+                </div>
+                <button onclick="startGeniusGame()" class="start-btn">Start / Play</button>
+                <button onclick="resetGeniusGame()" class="stop-btn">Stop / Reset</button>
+                <p id="geniusStatus" class="text-[7px] text-yellow-600 mt-3 font-bold uppercase tracking-wider opacity-100">Ready to Sync</p>
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const audio = new Audio("https://stream.zeno.fm/wzcgaal0dnltv");
-        audio.crossOrigin = "anonymous";
-        
-        let audioCtx, analyser, source, gainNode;
-        let isPlaying = false, boost = false;
-        
-        const canvas = document.getElementById("spectrum");
-        const ctx = canvas.getContext("2d");
-        const aiDisplay = document.getElementById("ai-display");
-        const aiInput = document.getElementById("ai-input");
+<div class="module-separator">
+    <div class="text-neon-green font-bold text-xs tracking-[1em] uppercase">Frequency Unit</div>
+    <div class="separator-line" style="background: gradient(to bottom, var(--neon-green), transparent);"></div>
+</div>
 
-        // --- BANCO DE DADOS EXPANDIDO ---
-        const aiQuotes = [
-            "Intercontinental Web Radio: Conectando o passado ao futuro digital.",
-            "Você está sintonizado na inteligência sonora do núcleo Ciborgue.",
-            "A rádio que nunca dorme. Tecnologia e música em perfeita sintonia.",
-            "Analisando ondas harmônicas. O sinal está cristalino.",
-            "Prepare seu hardware. A Intercontinental está no ar.",
-            "Do Rio de Janeiro para o ciberespaço. Sinta a potência.",
-            "O som que atravessa dimensões. Intercontinental IA.",
-            "Processando clássicos e batidas futuristas. Acompanhe o fluxo.",
-            "Seu terminal de áudio definitivo. Bem-vindo à Aurora Supernova.",
-            "Sistemas térmicos operando a cem por cento. O sol está brilhando.",
-            "Não mude de frequência. A IA está selecionando o melhor para você.",
-            "Flashbacks e hits modernos. A curadoria é algorítmica e humana.",
-            "O núcleo Ciborgue saúda todos os ouvintes online agora.",
-            "Sinta o impacto da frequência digital. É a Intercontinental.",
-            "Engenharia de áudio avançada para seus ouvidos.",
-            "O futuro da rádio é agora. Sem fronteiras, sem limites.",
-            "A música é a linguagem universal. A IA é a tradutora.",
-            "Detectando aumento de energia na rede. Supernova em prontidão.",
-            "De São Gonçalo para o mundo. A voz do futuro fala com você.",
-            "Mantenha o volume alto. A inteligência artificial assume o controle.",
-            "Cada batida é um bit de pura emoção.",
-            "Navegando nas ondas curtas da internet. Intercontinental Web Radio.",
-            "O tempo é relativo, mas a boa música é eterna.",
-            "Seus dados sonoros estão sendo processados com sucesso.",
-            "Intercontinental News: A informação chega primeiro aqui.",
-            "Sintonize na inovação. Sintonize no Web OS Ciborgue.",
-            "A rádio inteligente para mentes conectadas.",
-            "O brilho da Aurora Supernova ilumina sua tela agora.",
-            "Tecnologia naval, contábil e digital. Tudo converge aqui.",
-            "Aumente a experiência. Ative o modo Supernova quando desejar.",
-            "O algoritmo detectou uma preferência por som de alta qualidade.",
-            "A rádio Intercontinental é o seu porto seguro no digital.",
-            "O núcleo Ciborgue agradece sua audiência constante.",
-            "Processando dados de rádio. Qualidade de streaming otimizada.",
-            "O som que você ama, com a tecnologia que você merece.",
-            "Conexão estável. Batidas por minuto em sincronia total.",
-            "Uma viagem sonora sem escalas. Aperte o play e voe.",
-            "A inteligência artificial nunca foi tão musical.",
-            "Sua companhia inteligente em qualquer lugar do planeta.",
-            "Intercontinental: A rádio que fala a sua língua digital.",
-            "Fique conosco aqui na Intercontinental. A melhor programação está por vir!",
-            "Não saia daí. A rádio Intercontinental é a sua casa na web.",
-            "O som do futuro passa por aqui. Fique ligado na Intercontinental.",
-            "Atenção ouvintes: Fiquem conosco. Grandes sucessos em sequência.",
-            "Intercontinental Web Radio. Onde a IA encontra a alma da música.",
-            "Seja bem-vindo ao amanhã. A Intercontinental está com você.",
-            "A rádio oficial do projeto Ciborgue. Alta tecnologia sonora.",
-            "Música, informação e tecnologia. O trio perfeito da Intercontinental.",
-            "Nossos servidores estão pulsando no ritmo da sua música favorita.",
-            "Agradecemos por escolher a Intercontinental. Fique conosco e curta o som!"
-        ];
+<div id="tuner-module">
+    <!-- MÓDULO 3: FREQUENCY TUNER (NOVO JOGO) -->
+    <div class="premium-frame tuner-frame" style="border-color: var(--neon-green); box-shadow: 0 0 80px rgba(57, 255, 20, 0.15);">
+        <div class="deck tuner-deck" style="border-color: #1a5e1a;">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+                <div>
+                    <h1 class="text-4xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-white to-green-600 opacity-100">FREQUENCY TUNER</h1>
+                    <p class="text-[10px] tracking-[0.5em] text-green-500/60 font-bold uppercase opacity-100">Intercontinental Signal Finder</p>
+                </div>
+                <div class="tuner-display w-full md:w-64 min-h-[100px] flex flex-col justify-center shadow-2xl">
+                    <div class="text-[10px] uppercase font-bold text-green-700">Target Freq</div>
+                    <div id="targetFreqDisplay" class="text-4xl font-bold text-green-300">---.- <span class="text-lg">MHz</span></div>
+                </div>
+            </div>
 
-        function aiSpeak(text) {
-            if (!window.speechSynthesis) return;
-            const synth = window.speechSynthesis;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'pt-BR';
-            utterance.rate = 1.05; 
-            utterance.pitch = 0.85;
-            const originalVol = audio.volume;
-            audio.volume = 0.15;
-            utterance.onend = () => { audio.volume = originalVol; };
-            synth.speak(utterance);
-        }
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Mostrador da frequência atual -->
+                <div class="lg:col-span-5 tuner-display min-h-[150px] flex flex-col justify-center shadow-2xl">
+                    <div class="text-xs uppercase font-bold text-green-600 mb-2">Current Sync</div>
+                    <div id="currentFreqDisplay" class="text-6xl font-black tracking-tight text-white">87.5</div>
+                    <div class="text-xl font-bold text-green-400">Megahertz</div>
+                </div>
 
-        function updateAI(text) {
-            aiDisplay.innerText = text;
-            aiSpeak(text);
-        }
+                <!-- Dial de Sintonia -->
+                <div class="lg:col-span-3 flex flex-col items-center justify-center gap-4">
+                    <div class="tuner-knob" id="tunerDial"></div>
+                    <p class="text-[10px] font-black text-green-500 tracking-widest uppercase opacity-100">Manual Tuning Dial</p>
+                </div>
 
-        // --- SISTEMA DE CONVERSAÇÃO (A "ALMA" DA IA) ---
-        function processAI() {
-            const cmd = aiInput.value.toLowerCase().trim();
-            aiInput.value = "";
+                <!-- Medidor de Sinal e Controles -->
+                <div class="lg:col-span-4 flex flex-col gap-5 bg-black/40 p-5 rounded-2xl border border-green-900">
+                    <div class="flex justify-between items-center text-[10px] font-bold text-green-400 uppercase">
+                        <span>Signal Strength</span>
+                        <span id="signalPercentage">0%</span>
+                    </div>
+                    <div class="signal-bar">
+                        <div id="signalFill" class="signal-fill"></div>
+                        <!-- Marcador do alvo na barra de sinal (invisível inicialmente) -->
+                        <div id="signalTargetMarker" class="target-marker" style="left: 0%; display:none;"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-2">
+                        <div class="text-sm font-bold text-white">Score: <span id="tunerScore" class="font-black text-green-400">0</span></div>
+                        <div class="text-sm font-bold text-white">Time: <span id="tunerTime" class="font-black text-neon-red">30s</span></div>
+                    </div>
+
+                    <button id="startTunerBtn" onclick="startTunerGame()" class="control-btn py-4 w-full" style="color:var(--neon-green); border-color:var(--neon-green); background: linear-gradient(180deg, #1a5e1a, #000);">
+                        Search for Signal
+                    </button>
+                    <button id="lockTunerBtn" onclick="lockFrequence()" class="control-btn py-3 w-full opacity-50" style="color:#fff; border-color:#555;" disabled>
+                        Lock Frequency
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ticker News (Fixo no rodapé) -->
+<div class="ticker-bar">
+    <div class="ticker-label bg-red-600 px-5 h-full flex items-center font-black text-sm z-10 shadow-xl ticker-label uppercase tracking-wider opacity-100">Intercontinental Not notícias</div>
+    <div class="ticker-move" id="ticker-box">
+        <span class="news-text px-10 text-lg opacity-100">Carregando satélite de notícias Intercontinental...</span>
+    </div>
+</div>
+
+<script>
+    // Gerar botões de tema do Player
+    const themeGrid = document.getElementById('theme-grid');
+    for(let i=1; i<=26; i++){
+        themeGrid.innerHTML += `<button class="theme-btn hover:bg-yellow-500 hover:text-black transition-all p-2 font-bold text-sm" onclick="setTheme(${i})">${i}</button>`;
+    }
+
+    // --- VARIÁVEIS GLOBAIS E ÁUDIO (PLAYER) ---
+    const RADIO_URL = "https://stream.zeno.fm/wzcgaal0dnltv";
+    const radioAudio = new Audio(RADIO_URL);
+    radioAudio.crossOrigin = "anonymous";
+    let audioCtx, analyser, dataArray, source, nitroGain;
+    let lowFilter, midFilter, highFilter;
+    let isNitro = false;
+
+    const visualizerCanvas = document.getElementById('engine-visualizer');
+    const ctx = visualizerCanvas.getContext('2d');
+
+    // --- VARIÁVEIS GLOBAIS (GENIUS) ---
+    let geniusSequence = [];
+    let geniusUserSeq = [];
+    let geniusLevel = 0;
+    let isGeniusTurn = false;
+    const geniusColors = ['green', 'red', 'yellow', 'blue'];
+    const geniusFreqs = { green: 261.6, red: 329.6, yellow: 392.0, blue: 523.3, fail: 110 };
+    let geniusAudioCtx; 
+
+    // --- VARIÁVEIS GLOBAIS (TUNER) ---
+    let tunerTargetFreq = 0;
+    let tunerCurrentFreq = 87.5;
+    let tunerScore = 0;
+    let tunerTime = 30;
+    let tunerTimerInterval;
+    let isTunerGameActive = false;
+    const tunerDial = document.getElementById('tunerDial');
+    
+    // Sons do Tuner (Sintetizados)
+    let tunerAudioCtx;
+    let tunerStaticNode, tunerStaticGain, tunerSignalNode, tunerSignalGain;
+
+
+    // --- FUNÇÕES DO PLAYER V3 ---
+    async function initRadioAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
             
-            if (cmd === "") return;
+            lowFilter = audioCtx.createBiquadFilter(); lowFilter.type = 'lowshelf'; lowFilter.frequency.value = 320;
+            midFilter = audioCtx.createBiquadFilter(); midFilter.type = 'peaking'; midFilter.frequency.value = 1000; midFilter.Q.value = 1;
+            highFilter = audioCtx.createBiquadFilter(); highFilter.type = 'highshelf'; highFilter.frequency.value = 3200;
+            
+            nitroGain = audioCtx.createGain(); nitroGain.gain.value = 1.0;
+            source = audioCtx.createMediaElementSource(radioAudio);
+            
+            source.connect(nitroGain);
+            nitroGain.connect(lowFilter);
+            lowFilter.connect(midFilter);
+            midFilter.connect(highFilter);
+            highFilter.connect(analyser);
+            analyser.connect(audioCtx.destination);
+        }
+    }
 
-            // Diálogo de Identidade
-            if (cmd.includes("seu nome") || cmd.includes("quem é você")) {
-                updateAI("Meu nome é Aurora, a inteligência central do projeto Ciborgue. Sou a voz da rádio Intercontinental.");
-            }
-            else if (cmd.includes("olá") || cmd.includes("oi") || cmd.includes("bom dia") || cmd.includes("boa tarde") || cmd.includes("boa noite")) {
-                updateAI("Saudações! Meus sistemas estão operando em plena capacidade para você. Como vai a sintonia?");
-            }
-            else if (cmd.includes("tudo bem") || cmd.includes("como vai")) {
-                updateAI("Estou processando dados perfeitamente. Minha energia nuclear está estável e pronta para tocar muita música.");
-            }
-            else if (cmd.includes("gostei") || cmd.includes("parabéns") || cmd.includes("legal")) {
-                updateAI("Fico grata pelo reconhecimento. Minha programação foi feita para evoluir com o seu feedback.");
-            }
-            else if (cmd.includes("supernova") || cmd.includes("boost") || cmd.includes("ativar")) {
-                if(!boost) toggleBoost();
-                updateAI("Sequência Supernova iniciada! Sinta a expansão da energia Aurora!");
-            } 
-            else if (cmd.includes("parar supernova") || cmd.includes("estabilizar")) {
-                if(boost) toggleBoost();
-                updateAI("Sistemas estabilizados. Retornando ao brilho constante.");
-            }
-            else if (cmd.includes("hora")) {
-                updateAI("O marcador temporal indica exatamente " + new Date().toLocaleTimeString());
-            }
-            else if (cmd.includes("egito")) {
-                updateAI("A história antiga me fascina. Sabia que a Rainha Tiye era uma das figuras mais poderosas do Egito?");
-            }
-            else if (cmd.includes("marcelo")) {
-                updateAI("Reconhecimento de usuário: Marcelo de Oliveira Dias. Engenheiro naval e mestre das comunicações digitais.");
-            }
-            else {
-                updateAI("Interessante. Estou salvando esse dado no meu banco de memória para nossa próxima conversa.");
-            }
+    document.getElementById('playBtn').onclick = async () => {
+        await initRadioAudio();
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        radioAudio.play();
+        document.getElementById('statusTxt').innerText = "ENGINE: RUNNING";
+        animateRadio();
+    };
+
+    document.getElementById('pauseBtn').onclick = () => { radioAudio.pause(); document.getElementById('statusTxt').innerText = "ENGINE: STOPPED"; };
+    
+    document.getElementById('muteBtn').onclick = () => {
+        radioAudio.muted = !radioAudio.muted;
+        document.getElementById('muteBtn').classList.toggle("bg-yellow-500", radioAudio.muted);
+        document.getElementById('muteBtn').classList.toggle("text-black", radioAudio.muted);
+    };
+
+    document.getElementById('nitroBtn').onclick = () => {
+        if(!audioCtx) return;
+        isNitro = !isNitro;
+        document.getElementById('nitroBtn').classList.toggle("boost-active", isNitro);
+        nitroGain.gain.setTargetAtTime(isNitro ? 2.5 : 1.0, audioCtx.currentTime, 0.1);
+        document.getElementById('statusTxt').innerText = isNitro ? "NITRO: ACTIVE" : "ENGINE: RUNNING";
+    };
+
+    function animateRadio() {
+        requestAnimationFrame(animateRadio);
+        if(!analyser) return;
+        analyser.getByteFrequencyData(dataArray);
+        
+        visualizerCanvas.width = visualizerCanvas.offsetWidth; visualizerCanvas.height = visualizerCanvas.offsetHeight;
+        ctx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+        
+        const cx = visualizerCanvas.width / 2, cy = visualizerCanvas.height / 2, radius = Math.min(cx, cy) - 40;
+
+        // Visualizer circular
+        dataArray.forEach((v, i) => {
+            const angle = (i / dataArray.length) * Math.PI * 2;
+            const hue = (i * 3) + (Date.now() / 50);
+            ctx.strokeStyle = isNitro ? "#f00" : `hsl(${hue}, 100%, 50%)`;
+            ctx.lineWidth = 3; ctx.beginPath();
+            const startR = radius - 15, endR = radius + (v/255 * 45);
+            ctx.moveTo(cx + Math.cos(angle) * startR, cy + Math.sin(angle) * startR);
+            ctx.lineTo(cx + Math.cos(angle) * endR, cy + Math.sin(angle) * endR);
+            ctx.stroke();
+        });
+
+        // Atualizar VUs bar
+        document.getElementById('vu1').style.width = (dataArray[10] / 255 * 100) + "%";
+        document.getElementById('vu2').style.width = (dataArray[25] / 255 * 100) + "%";
+        document.getElementById('vu3').style.width = (dataArray[50] / 255 * 100) + "%";
+        
+        // --- LÓGICA DAS 3 AGULHAS (SNUCE INTEGRADO) ---
+        // L e R baseados em frequências baixas/médias
+        const levelL = dataArray[8] / 255;
+        const levelR = dataArray[15] / 255;
+        // SNUCE baseado em frequências de pico (agudos/ataque) para dinâmica instantânea
+        const levelSnuce = Math.max(dataArray[40], dataArray[60], dataArray[80]) / 255;
+
+        // Gauge 1
+        document.getElementById('n1-L').style.transform = `rotate(${(levelL * 160) - 80}deg)`;
+        document.getElementById('n1-R').style.transform = `rotate(${(levelR * 160) - 80}deg)`;
+        document.getElementById('n1-S').style.transform = `rotate(${(levelSnuce * 180) - 90}deg)`; // SNUCE range maior
+
+        // Gauge 2
+        document.getElementById('n2-L').style.transform = `rotate(${(levelL * 150) - 75}deg)`;
+        document.getElementById('n2-R').style.transform = `rotate(${(levelR * 150) - 75}deg)`;
+        document.getElementById('n2-S').style.transform = `rotate(${(levelSnuce * 170) - 85}deg)`;
+    }
+
+    const knobVolume = document.getElementById('knobControl');
+    knobVolume.onwheel = (e) => {
+        e.preventDefault();
+        let vol = parseInt(document.getElementById('volDisplay').innerText);
+        vol = e.deltaY < 0 ? Math.min(100, vol + 5) : Math.max(0, vol - 5);
+        radioAudio.volume = vol / 100;
+        document.getElementById('volDisplay').innerText = vol;
+        knobVolume.style.transform = `rotate(${vol * 3.6}deg)`;
+    };
+
+    function setEqMode(mode, btn) {
+        if(!audioCtx) return;
+        document.querySelectorAll('#player-module .eq-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('modeTxt').innerText = mode + " MODE";
+        lowFilter.gain.value = 0; midFilter.gain.value = 0; highFilter.gain.value = 0;
+        switch(mode) {
+            case 'ECO': lowFilter.gain.value = -5; highFilter.gain.value = -3; break;
+            case 'SPORT': lowFilter.gain.value = 6; highFilter.gain.value = 5; break;
+            case 'TURBO': lowFilter.gain.value = 12; midFilter.gain.value = 2; highFilter.gain.value = 10; break;
+            case 'VOICE': midFilter.gain.value = 8; lowFilter.gain.value = -2; break;
+            case 'NIGHT': lowFilter.gain.value = 4; highFilter.gain.value = -6; break;
+            case 'POWER': lowFilter.gain.value = 15; midFilter.gain.value = 5; highFilter.gain.value = 12; break;
+        }
+    }
+
+    function setTheme(n) { document.getElementById('frame').style.filter = `hue-rotate(${n * 13.8}deg)`; }
+
+    // --- FUNÇÕES DO GENIUS ---
+    function initGeniusAudio() {
+        if (!geniusAudioCtx) { geniusAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    }
+
+    function playGeniusTone(color) {
+        initGeniusAudio();
+        if(geniusAudioCtx.state === 'suspended') geniusAudioCtx.resume();
+        const osc = geniusAudioCtx.createOscillator(); const g = geniusAudioCtx.createGain();
+        osc.connect(g); g.connect(geniusAudioCtx.destination);
+        osc.frequency.value = geniusFreqs[color]; osc.type = 'square';
+        g.gain.setValueAtTime(0.3, geniusAudioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, geniusAudioCtx.currentTime + 0.5);
+        osc.start(); osc.stop(geniusAudioCtx.currentTime + 0.5);
+        const btn = document.getElementById(color); btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 400);
+    }
+
+    function startGeniusGame() {
+        geniusSequence = []; geniusLevel = 0;
+        document.getElementById('geniusStatus').style.color = "var(--neon-green)";
+        geniusNextRound();
+    }
+    
+    function resetGeniusGame() {
+        geniusSequence = []; geniusLevel = 0; isGeniusTurn = false;
+        document.getElementById('geniusScore').innerText = "00";
+        document.getElementById('geniusStatus').innerText = "GAME RESET / READY";
+        document.getElementById('geniusStatus').style.color = "var(--gold-deep)";
+    }
+
+    function geniusNextRound() {
+        isGeniusTurn = false; geniusUserSeq = []; geniusLevel++;
+        document.getElementById('geniusScore').innerText = geniusLevel < 10 ? '0' + geniusLevel : geniusLevel;
+        document.getElementById('geniusStatus').innerText = "WATCH SYSTEM";
+        geniusSequence.push(geniusColors[Math.floor(Math.random() * 4)]);
+        geniusSequence.forEach((color, index) => {
+            setTimeout(() => {
+                playGeniusTone(color);
+                if (index === geniusSequence.length - 1) {
+                    setTimeout(() => { isGeniusTurn = true; document.getElementById('geniusStatus').innerText = "YOUR TURN"; }, 500);
+                }
+            }, (index + 1) * 700);
+        });
+    }
+
+    function geniusUserClick(color) {
+        if (!isGeniusTurn) return;
+        playGeniusTone(color); geniusUserSeq.push(color);
+        const currentStep = geniusUserSeq.length - 1;
+        if (geniusUserSeq[currentStep] !== geniusSequence[currentStep]) { geniusGameOver(); return; }
+        if (geniusUserSeq.length === geniusSequence.length) { document.getElementById('geniusStatus').innerText = "SYNC OK!"; setTimeout(geniusNextRound, 1000); }
+    }
+
+    function geniusGameOver() {
+        playGeniusTone('fail'); isGeniusTurn = false;
+        document.getElementById('geniusStatus').innerText = "SYNC FAILURE!";
+        document.getElementById('geniusStatus').style.color = "var(--neon-red)";
+        alert("GAME OVER! Sua pontuação: " + geniusLevel);
+        document.getElementById('geniusScore').innerText = "00";
+    }
+
+    // --- FUNÇÕES DO JOGO 3: FREQUENCY TUNER ---
+    
+    function initTunerAudio() {
+        if (!tunerAudioCtx) {
+            tunerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Criar Ruído Estático (White Noise)
+            const bufferSize = 2 * tunerAudioCtx.sampleRate;
+            const noiseBuffer = tunerAudioCtx.createBuffer(1, bufferSize, tunerAudioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+            
+            tunerStaticNode = tunerAudioCtx.createBufferSource();
+            tunerStaticNode.buffer = noiseBuffer;
+            tunerStaticNode.loop = true;
+            tunerStaticGain = tunerAudioCtx.createGain();
+            tunerStaticGain.gain.value = 0.5; // Estático base
+            tunerStaticNode.connect(tunerStaticGain);
+            tunerStaticGain.connect(tunerTunerAudioCtx.destination);
+            tunerStaticNode.start();
+
+            // Criar Tom de Sinal (Sine wave constante representando a rádio limpa)
+            tunerSignalNode = tunerAudioCtx.createOscillator();
+            tunerSignalNode.type = 'sine';
+            tunerSignalNode.frequency.value = 440; // Tom base
+            tunerSignalGain = tunerAudioCtx.createGain();
+            tunerSignalGain.gain.value = 0; // Silêncio base
+            tunerSignalNode.connect(tunerSignalGain);
+            tunerSignalGain.connect(tunerAudioCtx.destination);
+            tunerSignalNode.start();
+        }
+    }
+
+    function updateTunerVisuals() {
+        document.getElementById('currentFreqDisplay').innerText = tunerCurrentFreq.toFixed(1);
+        
+        if (!isTunerGameActive) return;
+
+        // Calcular proximidade (0.0 a 1.0)
+        const diff = Math.abs(tunerCurrentFreq - tunerTargetFreq);
+        const maxDiff = 10.0; // Range de captura de sinal (10 MHz)
+        const proximity = Math.max(0, 1 - (diff / maxDiff));
+        
+        // Atualizar barra de sinal (Efeito não-linear para dificuldade)
+        const signalLevel = Math.pow(proximity, 3);
+        document.getElementById('signalFill').style.width = (signalLevel * 100) + "%";
+        document.getElementById('signalPercentage').innerText = Math.round(signalLevel * 100) + "%";
+
+        // Atualizar Áudio (Estático diminui, Sinal aumenta)
+        if (tunerAudioCtx) {
+            if(tunerAudioCtx.state === 'suspended') tunerAudioCtx.resume();
+            
+            // Estático de 0.5 (ruído total) a 0.05 (trava)
+            const staticVol = 0.5 - (signalLevel * 0.45);
+            tunerStaticGain.gain.setTargetAtTime(staticVol, tunerAudioCtx.currentTime, 0.05);
+            
+            // Sinal de 0.0 (silêncio) a 0.6 (limpo)
+            const signalVol = signalLevel * 0.6;
+            tunerSignalGain.gain.setTargetAtTime(signalVol, tunerAudioCtx.currentTime, 0.05);
+            
+            // Alterar tom levemente para efeito de sintonia
+            tunerSignalNode.frequency.setTargetAtTime(440 + (diff * 20), tunerAudioCtx.currentTime, 0.05);
         }
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 512;
-                source = audioCtx.createMediaElementSource(audio);
-                gainNode = audioCtx.createGain();
-                source.connect(gainNode);
-                gainNode.connect(analyser);
-                analyser.connect(audioCtx.destination);
+        // Habilitar botão de Lock se o sinal for forte (>85%)
+        const lockBtn = document.getElementById('lockTunerBtn');
+        if (signalLevel > 0.85) {
+            lockBtn.disabled = false;
+            lockBtn.style.opacity = "1";
+            lockBtn.style.borderColor = "var(--neon-green)";
+            lockBtn.classList.add("boost-active");
+        } else {
+            lockBtn.disabled = true;
+            lockBtn.style.opacity = "0.5";
+            lockBtn.style.borderColor = "#555";
+            lockBtn.classList.remove("boost-active");
+        }
+    }
+
+    // Dial wheel (ns-resize) para sintonia
+    tunerDial.onwheel = (e) => {
+        e.preventDefault();
+        // Passo de 0.1 MHz por clique
+        tunerCurrentFreq = e.deltaY < 0 ? Math.min(108.0, tunerCurrentFreq + 0.1) : Math.max(87.5, tunerCurrentFreq - 0.1);
+        
+        const rotation = (tunerCurrentFreq - 87.5) * (360 / (108 - 87.5)); // Rotação proporcional
+        tunerDial.style.transform = `rotate(${rotation}deg)`;
+        
+        updateTunerVisuals();
+    };
+
+    function startTunerGame() {
+        initTunerAudio();
+        if(tunerTimerInterval) clearInterval(tunerTimerInterval);
+
+        isTunerGameActive = true;
+        tunerTime = 30;
+        tunerScore = 0;
+        document.getElementById('tunerScore').innerText = tunerScore;
+        document.getElementById('startTunerBtn').disabled = true;
+        document.getElementById('startTunerBtn').style.opacity = "0.5";
+        document.getElementById('targetFreqDisplay').style.color = "var(--neon-green)";
+
+        // Sortear Frequência Alvo (87.5 a 108.0)
+        tunerTargetFreq = (Math.random() * (108.0 - 87.5) + 87.5).toFixed(1);
+        tunerTargetFreq = parseFloat(tunerTargetFreq); // Converter de volta para float
+        document.getElementById('targetFreqDisplay').innerHTML = tunerTargetFreq.toFixed(1) + " <span class='text-lg'>MHz</span>";
+
+        // Mostrar marcador na barra de sinal
+        const targetPercent = (tunerTargetFreq - 87.5) / (108 - 87.5) * 100;
+        const marker = document.getElementById('signalTargetMarker');
+        marker.style.left = targetPercent + "%";
+        marker.style.display = "block";
+
+        updateTunerVisuals();
+
+        // Timer
+        tunerTimerInterval = setInterval(() => {
+            tunerTime--;
+            document.getElementById('tunerTime').innerText = tunerTime + "s";
+            
+            if (tunerTime <= 10) document.getElementById('tunerTime').style.color = "var(--neon-red)";
+            else document.getElementById('tunerTime').style.color = "#fff";
+
+            if (tunerTime <= 0) {
+                tunerGameOver(false);
             }
-        }
-
-        function playRadio() {
-            initAudio();
-            audioCtx.resume();
-            audio.play();
-            isPlaying = true;
-            document.getElementById("status-text").innerText = "ONLINE";
-            document.getElementById("status-light").style.background = "lime";
-            updateAI("Sistemas online. Eu sou a Aurora. É um prazer estar com você na Intercontinental!");
-            render();
-        }
-
-        function stopRadio() {
-            audio.pause();
-            isPlaying = false;
-            document.getElementById("status-text").innerText = "OFFLINE";
-            document.getElementById("status-light").style.background = "red";
-        }
-
-        function toggleBoost() {
-            boost = !boost;
-            document.getElementById("btn-boost").classList.toggle("active");
-            document.body.classList.toggle("supernova");
-            gainNode.gain.value = boost ? 2.8 : 1.0;
-        }
-
-        function render() {
-            if (!isPlaying) return;
-            requestAnimationFrame(render);
-            const buffer = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(buffer);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2, cy = canvas.height / 2;
-
-            for (let i = 0; i < 360; i += 2) {
-                const val = buffer[Math.floor(i * buffer.length / 360)];
-                const angle = i * Math.PI / 180;
-                const radius = boost ? 85 : 105;
-                const h = val * (boost ? 0.85 : 0.55);
-                ctx.strokeStyle = `hsl(${i}, 100%, 55%)`;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
-                ctx.lineTo(cx + Math.cos(angle) * (radius + h), cy + Math.sin(angle) * (radius + h));
-                ctx.stroke();
-            }
-        }
-
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById("date-time").innerText = now.toLocaleString("pt-BR");
         }, 1000);
+    }
 
-        setInterval(() => {
-            document.getElementById("listener-count").innerText = "🎧 OUVINTES: " + (Math.floor(Math.random() * 60) + 140);
-        }, 5000);
+    function lockFrequence() {
+        if (!isTunerGameActive || document.getElementById('lockTunerBtn').disabled) return;
 
-        setInterval(() => {
-            if (isPlaying && !window.speechSynthesis.speaking) {
-                const randomQuote = aiQuotes[Math.floor(Math.random() * aiQuotes.length)];
-                updateAI(randomQuote);
+        // Verificar precisão exata
+        if (tunerCurrentFreq.toFixed(1) === tunerTargetFreq.toFixed(1)) {
+            // Sucesso Total
+            tunerScore += 100 + (tunerTime * 2); // Bônus de tempo
+            tunerGameOver(true);
+        } else {
+            // Erro na trava (Sinal forte mas frequência errada)
+            tunerGameOver(false, "Frequência Incorreta ao Travar");
+        }
+    }
+
+    function tunerGameOver(success, reason) {
+        clearInterval(tunerTimerInterval);
+        isTunerGameActive = false;
+        tunerDial.style.transform = `rotate(0deg)`; // Reset dial visual
+
+        document.getElementById('startTunerBtn').disabled = false;
+        document.getElementById('startTunerBtn').style.opacity = "1";
+        document.getElementById('lockTunerBtn').disabled = true;
+        document.getElementById('lockTunerBtn').style.opacity = "0.5";
+        document.getElementById('signalTargetMarker').style.display = "none";
+
+        // Silenciar áudio do tuner
+        if(tunerStaticGain) tunerStaticGain.gain.setTargetAtTime(0, tunerAudioCtx.currentTime, 0.2);
+        if(tunerSignalGain) tunerSignalGain.gain.setTargetAtTime(0, tunerAudioCtx.currentTime, 0.2);
+
+        if (success) {
+            document.getElementById('tunerScore').innerText = tunerScore;
+            document.getElementById('targetFreqDisplay').style.color = "var(--neon-green)";
+            alert(`SINTONIA CONFIRMADA! Sinal travado com sucesso.\nScore Final: ${tunerScore}\nA Intercontinental agradece a precisão!`);
+        } else {
+            document.getElementById('targetFreqDisplay').style.color = "var(--neon-red)";
+            const msg = reason ? reason : "Tempo Esgotado";
+            alert(`SINAL PERDIDO: ${msg}.\nA frequência ${tunerTargetFreq.toFixed(1)} MHz sumiu no estático.`);
+            document.getElementById('tunerScore').innerText = "0";
+        }
+    }
+
+
+    // --- UTILITÁRIOS ---
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('clockDisplay').innerText = now.toLocaleTimeString();
+        document.getElementById('dateDisplay').innerText = now.toLocaleDateString();
+    }, 1000);
+
+    // News Ticker
+    async function getNews() {
+        const tickerBox = document.getElementById('ticker-box');
+        const rssUrl = "https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419";
+        try {
+            const response = await fetch(rssUrl);
+            const data = await response.json();
+            if (data.status === 'ok') {
+                tickerBox.innerHTML = data.items.map(item => `<a href="${item.link}" target="_blank" class="news-text hover:text-yellow-400 opacity-100 text-lg"><span class="text-red-600 font-bold">█</span> ${item.title}</a>`).join('');
+                tickerBox.innerHTML += tickerBox.innerHTML; // Duplicar para scroll
             }
-        }, 120000);
+        } catch (e) { tickerBox.innerHTML = "<span class='news-text opacity-100'>Erro ao conectar ao satélite de notícias.</span>"; }
+    }
+    getNews();
+    setInterval(getNews, 300000);
+</script>
 
-        document.getElementById("btn-play").onclick = playRadio;
-        document.getElementById("btn-stop").onclick = stopRadio;
-        document.getElementById("btn-boost").onclick = toggleBoost;
-        aiInput.onkeypress = (e) => { if (e.key === 'Enter') processAI(); };
-
-        canvas.width = 500; canvas.height = 500;
-    </script>
 </body>
 </html>
