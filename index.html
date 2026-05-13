@@ -1,342 +1,722 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>INTERCONTINENTAL • GOLDEN ENGINE V4.2</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>INTERCONTINENTAL • GOLDEN ENGINE V4.5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        :root {
-            --gold-bright: #fff9d0;
-            --gold-main: #ffd700;
-            --gold-deep: #b8860b;
-            --neon-blue: #00e5ff;
-            --neon-pink: #ff00ff;
-        }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-        body {
-            margin: 0;
-            background: radial-gradient(circle at center, #333 0%, #000 100%);
-            font-family: 'Orbitron', sans-serif;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 0 80px 0;
-        }
+  <style>
+    :root {
+      --gold-bright: #fff9d0;
+      --gold-main: #ffd700;
+      --gold-deep: #b8860b;
+      --neon-blue: #00e5ff;
+      --neon-pink: #ff00ff;
+      --neon-green: #39ff14;
+      --danger-red: #ff0000;
+    }
 
-        /* --- CHASSI COM MAIS LUZ --- */
-        .chassis {
-            width: 95%;
-            max-width: 1200px;
-            background: linear-gradient(135deg, #444, #999, #444); /* Brilho metálico mais claro */
-            padding: 15px;
-            border-radius: 50px;
-            border: 3px solid var(--gold-main);
-            box-shadow: 0 0 80px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.5);
-            position: relative;
-        }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at center, #333 0%, #000 100%);
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 90px 0 90px 0;
+      overflow-x: hidden;
+    }
 
-        .inner-deck {
-            background: rgba(15, 15, 15, 0.95);
-            border-radius: 40px;
-            padding: 35px;
-            border: 2px solid var(--gold-deep);
-            box-shadow: inset 0 0 50px #000;
-        }
+    /* --- CHASSI PREMIUM --- */
+    .chassis {
+      width: 95%;
+      max-width: 1200px;
+      background: linear-gradient(135deg, #444, #999, #444);
+      padding: 15px;
+      border-radius: 50px;
+      border: 3px solid var(--gold-main);
+      box-shadow: 0 0 80px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255,255,255,0.5);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .lcd-v4 {
-            background: #111;
-            border: 2px solid var(--gold-main);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 10px #000;
-            border-radius: 12px;
-            padding: 15px;
-            font-family: 'Share Tech Mono';
-        }
+    .chassis::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+      animation: shine 10s linear infinite;
+      pointer-events: none;
+    }
 
-        /* --- MEDIDORES DE AGULHA --- */
-        .gauge-box {
-            width: 130px; height: 75px;
-            background: #000;
-            border: 2px solid var(--gold-main);
-            border-radius: 70px 70px 5px 5px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 10px var(--gold-main);
-        }
-        .needle {
-            position: absolute; bottom: 5px; left: 50%;
-            width: 2px; height: 60px;
-            background: #ff0000;
-            transform-origin: bottom center;
-            transform: rotate(-70deg);
-            transition: transform 0.1s ease-out;
-            box-shadow: 0 0 5px #ff0000;
-        }
+    @keyframes shine {
+      0% { transform: translateX(-30%) translateY(-30%); }
+      100% { transform: translateX(30%) translateY(30%); }
+    }
 
-        /* --- BARRAS DE LED --- */
-        .led-bar {
-            width: 100%; height: 12px;
-            background: #111; border-radius: 10px;
-            border: 1px solid #333; overflow: hidden;
-        }
-        .led-fill {
-            height: 100%; width: 0%;
-            background: linear-gradient(to right, #0f0, #ff0, #f00);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-        }
+    .inner-deck {
+      background: rgba(15, 15, 15, 0.95);
+      border-radius: 40px;
+      padding: 35px;
+      border: 2px solid var(--gold-deep);
+      box-shadow: inset 0 0 50px #000;
+      position: relative;
+      z-index: 2;
+    }
 
-        /* --- BOTOES --- */
-        .btn-core {
-            background: linear-gradient(to bottom, #444, #111);
-            border: 2px solid var(--gold-main);
-            border-radius: 10px;
-            font-weight: 900;
-            transition: 0.2s;
-            text-shadow: 0 0 5px #000;
-        }
-        .btn-core:hover { background: var(--gold-main); color: #000; box-shadow: 0 0 20px var(--gold-main); }
-        .active-mode { background: var(--gold-main); color: #000; box-shadow: 0 0 25px var(--gold-main); }
+    .lcd-v4 {
+      background: #111;
+      border: 2px solid var(--gold-main);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 10px #000;
+      border-radius: 12px;
+      padding: 15px;
+      font-family: 'Share Tech Mono';
+    }
 
-        /* --- NOTICIAS --- */
-        .ticker-v4 {
-            position: fixed; bottom: 0; width: 100%;
-            background: #000; border-top: 4px solid #f00;
-            height: 60px; display: flex; align-items: center; z-index: 1000;
-        }
-        .ticker-label { background: #f00; padding: 0 25px; font-weight: 900; height: 100%; display: flex; align-items: center; }
-        .ticker-move { 
-            display: flex; white-space: nowrap; 
-            animation: moveTicker 35s linear infinite; /* Velocidade média balanceada */
-        }
-        .ticker-move:hover { animation-play-state: paused; }
-        @keyframes moveTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .gauge-box {
+      width: 130px;
+      height: 75px;
+      background: #000;
+      border: 2px solid var(--gold-main);
+      border-radius: 70px 70px 5px 5px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 10px var(--gold-main);
+    }
 
-        .theme-btn { border: 1px solid var(--gold-dark); background: #222; color: var(--gold-main); width: 35px; height: 35px; border-radius: 5px; font-size: 11px; font-weight: bold; }
-        .theme-btn:hover { background: #fff; color: #000; }
-    </style>
+    .needle {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      width: 2px;
+      height: 60px;
+      background: #ff0000;
+      transform-origin: bottom center;
+      transform: rotate(-70deg);
+      transition: transform 0.1s ease-out;
+      box-shadow: 0 0 5px #ff0000;
+    }
+
+    .led-bar {
+      width: 100%;
+      height: 12px;
+      background: #111;
+      border-radius: 10px;
+      border: 1px solid #333;
+      overflow: hidden;
+    }
+
+    .led-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #0f0, #ff0, #f00);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+      transition: width 0.08s linear;
+    }
+
+    .btn-core {
+      background: linear-gradient(to bottom, #444, #111);
+      border: 2px solid var(--gold-main);
+      border-radius: 10px;
+      font-weight: 900;
+      transition: 0.2s;
+      text-shadow: 0 0 5px #000;
+      user-select: none;
+    }
+
+    .btn-core:hover {
+      background: var(--gold-main);
+      color: #000;
+      box-shadow: 0 0 20px var(--gold-main);
+    }
+
+    .mode-btn.active-mode {
+      background: var(--gold-main);
+      color: #000;
+      box-shadow: 0 0 25px var(--gold-main);
+    }
+
+    .theme-btn {
+      border: 1px solid #444;
+      background: #222;
+      color: var(--gold-main);
+      width: 35px;
+      height: 35px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .theme-btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    /* ============ LETREIROS ============ */
+
+    .ticker-top {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(to right, #000, #111, #000);
+      border-bottom: 3px solid var(--gold-main);
+      z-index: 2000;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+    }
+
+    .ticker-bottom {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(to right, #000, #111, #000);
+      border-top: 4px solid var(--danger-red);
+      z-index: 2000;
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.8);
+    }
+
+    .ticker-label {
+      height: 100%;
+      padding: 0 25px;
+      display: flex;
+      align-items: center;
+      font-weight: 900;
+      white-space: nowrap;
+      letter-spacing: 2px;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .label-eco {
+      background: var(--gold-main);
+      color: #000;
+      box-shadow: 10px 0 20px rgba(0,0,0,0.6);
+    }
+
+    .label-news {
+      background: var(--danger-red);
+      color: #fff;
+      box-shadow: 10px 0 20px rgba(0,0,0,0.6);
+    }
+
+    .ticker-wrapper {
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .ticker-move {
+      display: flex;
+      white-space: nowrap;
+      align-items: center;
+      will-change: transform;
+    }
+
+    .ticker-move:hover {
+      animation-play-state: paused;
+    }
+
+    .eco-speed {
+      animation: moveTickerEco 45s linear infinite;
+    }
+
+    .news-speed {
+      animation: moveTickerNews 85s linear infinite;
+    }
+
+    @keyframes moveTickerEco {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes moveTickerNews {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-link {
+      padding: 0 60px;
+      font-size: 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      letter-spacing: 1px;
+    }
+
+    .ticker-link span {
+      font-size: 14px;
+      opacity: 0.75;
+      margin-left: 12px;
+      font-weight: 600;
+    }
+
+    .eco-item {
+      color: var(--gold-bright);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+    }
+
+    .eco-item b {
+      background: var(--neon-blue);
+      color: #000;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-right: 14px;
+      box-shadow: 0 0 15px rgba(0,229,255,0.5);
+    }
+
+    .news-item {
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .news-item i {
+      color: var(--danger-red);
+      margin-right: 12px;
+      font-style: normal;
+    }
+
+    @media(max-width: 600px){
+      .ticker-link { font-size: 13px; padding: 0 35px; }
+      .news-item { font-size: 14px; }
+      .ticker-label { font-size: 11px; padding: 0 15px; }
+      body { padding: 90px 0 90px 0; }
+    }
+  </style>
 </head>
 
 <body>
 
+<!-- LETREIRO SUPERIOR -->
+<div class="ticker-top">
+  <div class="ticker-label label-eco">STATION ECOSYSTEM</div>
+  <div class="ticker-wrapper">
+    <div class="ticker-move eco-speed">
+      <a class="ticker-link eco-item" href="https://sites.google.com/view/vox-i-a/in%C3%ADcio" target="_blank">
+        <b>VOX I.A</b> ajudante virtual inteligente <span>clique para acessar</span>
+      </a>
+
+      <a class="ticker-link eco-item" href="https://www.youtube.com/@RadioWebintercontinental" target="_blank">
+        <b>YOUTUBE</b> canal oficial da rádio <span>inscreva-se agora</span>
+      </a>
+
+      <a class="ticker-link eco-item" href="https://sites.google.com/view/dynac-x-play-intercontinental/in%C3%ADcio" target="_blank">
+        <b>DYNAC X-PLAY</b> portal de jogos intercontinental <span>entre e jogue</span>
+      </a>
+
+      <a class="ticker-link eco-item" href="https://sites.google.com/view/pandora-e-euterpe/in%C3%ADcio" target="_blank">
+        <b>PANDORA</b> história musical e curiosidades <span>explorar</span>
+      </a>
+
+      <!-- DUPLICAÇÃO -->
+      <a class="ticker-link eco-item" href="https://sites.google.com/view/vox-i-a/in%C3%ADcio" target="_blank">
+        <b>VOX I.A</b> ajudante virtual inteligente <span>clique para acessar</span>
+      </a>
+
+      <a class="ticker-link eco-item" href="https://www.youtube.com/@RadioWebintercontinental" target="_blank">
+        <b>YOUTUBE</b> canal oficial da rádio <span>inscreva-se agora</span>
+      </a>
+
+      <a class="ticker-link eco-item" href="https://sites.google.com/view/dynac-x-play-intercontinental/in%C3%ADcio" target="_blank">
+        <b>DYNAC X-PLAY</b> portal de jogos intercontinental <span>entre e jogue</span>
+      </a>
+
+      <a class="ticker-link eco-item" href="https://sites.google.com/view/pandora-e-euterpe/in%C3%ADcio" target="_blank">
+        <b>PANDORA</b> história musical e curiosidades <span>explorar</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER -->
 <div class="chassis" id="playerFrame">
-    <div class="inner-deck">
-        
-        <!-- CABEÇALHO -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-            <div class="text-center md:text-left">
-                <h1 class="text-5xl lg:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-600 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-                    INTERCONTINENTAL
-                </h1>
-                <p class="text-[11px] tracking-[0.7em] text-yellow-400 font-bold">GOLDEN ENGINE V4.2 PREMIUM</p>
-            </div>
+  <div class="inner-deck">
 
-            <div class="lcd-v4 w-full md:w-80">
-                <div class="flex justify-between border-b border-yellow-500/30 pb-1 mb-1">
-                    <span id="clockDisplay" class="text-3xl font-bold text-yellow-500">00:00:00</span>
-                    <span id="dateDisplay" class="text-[10px] self-end opacity-70">09/05/2026</span>
-                </div>
-                <div class="flex justify-between text-[11px] font-black uppercase text-yellow-600">
-                    <span id="statusTxt">ENGINE: READY</span>
-                    <span id="modeTxt">STOCK MODE</span>
-                </div>
-            </div>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+      <div class="text-center md:text-left">
+        <h1 class="text-5xl lg:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-600 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+          INTERCONTINENTAL
+        </h1>
+        <p class="text-[11px] tracking-[0.7em] text-yellow-400 font-bold">GOLDEN ENGINE V4.5 PREMIUM</p>
+      </div>
+
+      <div class="lcd-v4 w-full md:w-80">
+        <div class="flex justify-between border-b border-yellow-500/30 pb-1 mb-1">
+          <span id="clockDisplay" class="text-3xl font-bold text-yellow-500">00:00:00</span>
+          <span id="dateDisplay" class="text-[10px] self-end opacity-70">--/--/----</span>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- ESQUERDA: AGULHAS E TEMAS -->
-            <div class="lg:col-span-3 flex flex-col gap-6 items-center">
-                <div class="bg-black/50 p-4 rounded-2xl border border-yellow-500/20 w-full">
-                    <p class="text-[9px] text-center mb-4 text-yellow-500 font-bold uppercase tracking-widest">Analog Telemetry</p>
-                    <div class="flex flex-col gap-4 items-center">
-                        <div class="gauge-box"><div id="needle1" class="needle"></div><p class="absolute bottom-1 w-full text-center text-[8px] text-yellow-600">BASS BOOST</p></div>
-                        <div class="gauge-box"><div id="needle2" class="needle" style="background:#00e5ff"></div><p class="absolute bottom-1 w-full text-center text-[8px] text-yellow-600">PRESSURE</p></div>
-                        <div class="gauge-box"><div id="needle3" class="needle" style="background:#ff00ff"></div><p class="absolute bottom-1 w-full text-center text-[8px] text-yellow-600">RPM FREQ</p></div>
-                    </div>
-                </div>
-
-                <div class="bg-black/50 p-4 rounded-2xl border border-yellow-500/20 w-full">
-                    <p class="text-[9px] text-center mb-2 text-yellow-500 font-bold uppercase">Engine Finish</p>
-                    <div class="grid grid-cols-5 gap-1 justify-items-center">
-                        <script>
-                            for(let i=1; i<=25; i++) {
-                                document.write(`<button class="theme-btn" onclick="setTheme(${i*14})">${i}</button>`);
-                            }
-                        </script>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CENTRO: CANVAS E CONTROLES -->
-            <div class="lg:col-span-6 space-y-6">
-                <div class="bg-black rounded-3xl border-2 border-yellow-500/40 overflow-hidden relative shadow-[0_0_40px_rgba(0,0,0,1)]">
-                    <canvas id="engineCanvas" class="w-full h-[350px]"></canvas>
-                </div>
-
-                <div class="space-y-3">
-                    <div class="led-bar"><div id="bar1" class="led-fill"></div></div>
-                    <div class="led-bar"><div id="bar2" class="led-fill" style="background:linear-gradient(to right, #00e5ff, #fff)"></div></div>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button id="playBtn" class="btn-core py-5 text-green-400">START</button>
-                    <button id="pauseBtn" class="btn-core py-5 text-red-500">STOP</button>
-                    <button id="muteBtn" class="btn-core py-5">MUTE</button>
-                    <button id="nitroBtn" class="btn-core py-5 text-yellow-500">NITRO</button>
-                </div>
-
-                <div class="flex flex-wrap justify-center gap-2">
-                    <button class="btn-core px-4 py-2 active-mode" onclick="setMode('STOCK', this)">STOCK</button>
-                    <button class="btn-core px-4 py-2" onclick="setMode('TURBO', this)">TURBO</button>
-                    <button class="btn-core px-4 py-2" onclick="setMode('VOICE', this)">VOICE</button>
-                    <button class="btn-core px-4 py-2" onclick="setMode('NIGHT', this)">NIGHT</button>
-                </div>
-            </div>
-
-            <!-- DIREITA: VOLUME E ECOSYSTEM -->
-            <div class="lg:col-span-3 flex flex-col items-center gap-8">
-                <div class="relative group">
-                    <div id="volWheel" class="w-40 h-40 rounded-full bg-gradient-to-tr from-black via-gray-800 to-black border-8 border-black shadow-[0_15px_40px_rgba(0,0,0,0.8)] cursor-pointer flex items-center justify-center">
-                        <span id="volDisplay" class="text-5xl font-black text-yellow-500 drop-shadow-lg">80</span>
-                        <div class="absolute inset-0 rounded-full border-4 border-yellow-500/20"></div>
-                    </div>
-                    <p class="text-center text-[10px] font-bold text-yellow-500 mt-4 tracking-widest uppercase">Master Volume</p>
-                </div>
-
-                <div class="w-full grid grid-cols-2 gap-2">
-                    <a href="https://intercontinental-web-radio.webnode.page/contato/" target="_blank" class="p-3 text-[9px] font-black text-center border border-blue-500 text-blue-400 bg-blue-500/5 rounded-lg hover:bg-blue-500 hover:text-white transition">CONTATO</a>
-                    <a href="https://www.youtube.com/@RadioWebintercontinental" target="_blank" class="p-3 text-[9px] font-black text-center border border-red-500 text-red-500 bg-red-500/5 rounded-lg hover:bg-red-500 hover:text-white transition">YOUTUBE</a>
-                    <a href="https://sites.google.com/view/vox-i-a/in%C3%ADcio" target="_blank" class="p-3 text-[9px] font-black text-center border border-green-500 text-green-400 bg-green-500/5 rounded-lg hover:bg-green-500 hover:text-white transition">VOX I.A</a>
-                    <a href="https://sites.google.com/view/dynac-x-play-intercontinental/in%C3%ADcio" target="_blank" class="p-3 text-[9px] font-black text-center border border-purple-500 text-purple-400 bg-purple-500/5 rounded-lg hover:bg-purple-500 hover:text-white transition">DYNAC</a>
-                </div>
-            </div>
+        <div class="flex justify-between text-[11px] font-black uppercase text-yellow-600">
+          <span id="statusTxt">ENGINE: READY</span>
+          <span id="modeTxt">STOCK MODE</span>
         </div>
+      </div>
     </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- ESQUERDA -->
+      <div class="lg:col-span-3 flex flex-col gap-6 items-center">
+        <div class="bg-black/50 p-4 rounded-2xl border border-yellow-500/20 w-full">
+          <p class="text-[9px] text-center mb-4 text-yellow-500 font-bold uppercase tracking-widest">Analog Telemetry</p>
+
+          <div class="flex flex-col gap-4 items-center">
+            <div class="gauge-box">
+              <div id="needle1" class="needle"></div>
+              <p class="absolute bottom-1 w-full text-center text-[8px] text-yellow-600">BASS BOOST</p>
+            </div>
+
+            <div class="gauge-box">
+              <div id="needle2" class="needle" style="background:#00e5ff"></div>
+              <p class="absolute bottom-1 w-full text-center text-[8px] text-yellow-600">PRESSURE</p>
+            </div>
+
+            <div class="gauge-box">
+              <div id="needle3" class="needle" style="background:#ff00ff"></div>
+              <p class="absolute bottom-1 w-full text-center text-[8px] text-yellow-600">RPM FREQ</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-black/50 p-4 rounded-2xl border border-yellow-500/20 w-full">
+          <p class="text-[9px] text-center mb-2 text-yellow-500 font-bold uppercase">Engine Finish</p>
+          <div class="grid grid-cols-5 gap-1 justify-items-center" id="themeGrid"></div>
+        </div>
+      </div>
+
+      <!-- CENTRO -->
+      <div class="lg:col-span-6 space-y-6">
+        <div class="bg-black rounded-3xl border-2 border-yellow-500/40 overflow-hidden relative shadow-[0_0_40px_rgba(0,0,0,1)]">
+          <canvas id="engineCanvas" class="w-full h-[350px]"></canvas>
+        </div>
+
+        <div class="space-y-3">
+          <div class="led-bar"><div id="bar1" class="led-fill"></div></div>
+          <div class="led-bar"><div id="bar2" class="led-fill" style="background:linear-gradient(to right, #00e5ff, #fff)"></div></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button id="playBtn" class="btn-core py-5 text-green-400">START</button>
+          <button id="pauseBtn" class="btn-core py-5 text-red-500">STOP</button>
+          <button id="muteBtn" class="btn-core py-5 text-blue-300">MUTE</button>
+          <button id="nitroBtn" class="btn-core py-5 text-yellow-500">NITRO</button>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2">
+          <button class="btn-core mode-btn px-4 py-2 active-mode" data-mode="STOCK">STOCK</button>
+          <button class="btn-core mode-btn px-4 py-2" data-mode="TURBO">TURBO</button>
+          <button class="btn-core mode-btn px-4 py-2" data-mode="VOICE">VOICE</button>
+          <button class="btn-core mode-btn px-4 py-2" data-mode="NIGHT">NIGHT</button>
+        </div>
+      </div>
+
+      <!-- DIREITA -->
+      <div class="lg:col-span-3 flex flex-col items-center gap-8">
+        <div class="relative group">
+          <div id="volWheel" class="w-40 h-40 rounded-full bg-gradient-to-tr from-black via-gray-800 to-black border-8 border-black shadow-[0_15px_40px_rgba(0,0,0,0.8)] cursor-pointer flex items-center justify-center">
+            <span id="volDisplay" class="text-5xl font-black text-yellow-500 drop-shadow-lg">80</span>
+            <div class="absolute inset-0 rounded-full border-4 border-yellow-500/20"></div>
+          </div>
+          <p class="text-center text-[10px] font-bold text-yellow-500 mt-4 tracking-widest uppercase">Master Volume</p>
+        </div>
+
+        <div class="w-full grid grid-cols-2 gap-2">
+          <a href="https://intercontinental-web-radio.webnode.page/contato/" target="_blank"
+             class="p-3 text-[9px] font-black text-center border border-blue-500 text-blue-400 bg-blue-500/5 rounded-lg hover:bg-blue-500 hover:text-white transition">CONTATO</a>
+
+          <a href="https://www.youtube.com/@RadioWebintercontinental" target="_blank"
+             class="p-3 text-[9px] font-black text-center border border-red-500 text-red-500 bg-red-500/5 rounded-lg hover:bg-red-500 hover:text-white transition">YOUTUBE</a>
+
+          <a href="https://sites.google.com/view/vox-i-a/in%C3%ADcio" target="_blank"
+             class="p-3 text-[9px] font-black text-center border border-green-500 text-green-400 bg-green-500/5 rounded-lg hover:bg-green-500 hover:text-white transition">VOX I.A</a>
+
+          <a href="https://sites.google.com/view/dynac-x-play-intercontinental/in%C3%ADcio" target="_blank"
+             class="p-3 text-[9px] font-black text-center border border-purple-500 text-purple-400 bg-purple-500/5 rounded-lg hover:bg-purple-500 hover:text-white transition">DYNAC</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<div class="ticker-v4">
-    <div class="ticker-label text-white">INTERCONTINENTAL NOTÍCIAS</div>
-    <div class="ticker-wrapper overflow-hidden flex-1">
-        <div class="ticker-move" id="newsBox">
-            <span class="px-10 text-white font-bold">/// Sincronizando sistema de notícias...</span>
-        </div>
+<!-- LETREIRO INFERIOR -->
+<div class="ticker-bottom">
+  <div class="ticker-label label-news">INTERCONTINENTAL NOTÍCIAS</div>
+  <div class="ticker-wrapper">
+    <div class="ticker-move news-speed" id="newsBox">
+      <span class="ticker-link news-item"><i>█</i> Sincronizando sistema de notícias...</span>
     </div>
-</div>
+  </div>
+</div><script>
+(() => {
 
-<script>
-    const STREAM_URL = "https://stream.zeno.fm/wzcgaal0dnltv";
-    const audio = new Audio(STREAM_URL);
-    audio.crossOrigin = "anonymous";
+  const STREAM_URL = "https://stream.zeno.fm/wzcgaal0dnltv";
+  const audio = new Audio(STREAM_URL);
+  audio.crossOrigin = "anonymous";
 
-    let audioCtx, analyser, source, nitroGain, dataArray, biquad;
-    let currentVol = 80;
+  const playBtn = document.getElementById("playBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const muteBtn = document.getElementById("muteBtn");
+  const nitroBtn = document.getElementById("nitroBtn");
 
-    async function initAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 256;
-            dataArray = new Uint8Array(analyser.frequencyBinCount);
-            
-            biquad = audioCtx.createBiquadFilter();
-            nitroGain = audioCtx.createGain();
-            source = audioCtx.createMediaElementSource(audio);
-            
-            source.connect(biquad);
-            biquad.connect(nitroGain);
-            nitroGain.connect(analyser);
-            analyser.connect(audioCtx.destination);
-        }
+  const clockDisplay = document.getElementById("clockDisplay");
+  const dateDisplay = document.getElementById("dateDisplay");
+  const statusTxt = document.getElementById("statusTxt");
+  const modeTxt = document.getElementById("modeTxt");
+
+  const needle1 = document.getElementById("needle1");
+  const needle2 = document.getElementById("needle2");
+  const needle3 = document.getElementById("needle3");
+
+  const bar1 = document.getElementById("bar1");
+  const bar2 = document.getElementById("bar2");
+
+  const volWheel = document.getElementById("volWheel");
+  const volDisplay = document.getElementById("volDisplay");
+
+  const engineCanvas = document.getElementById("engineCanvas");
+  const playerFrame = document.getElementById("playerFrame");
+  const themeGrid = document.getElementById("themeGrid");
+
+  let audioCtx = null;
+  let analyser = null;
+  let source = null;
+  let nitroGain = null;
+  let biquad = null;
+  let dataArray = null;
+
+  let currentVol = 80;
+  let nitroActive = false;
+  let running = false;
+
+  // Cria botões de tema sem document.write
+  for (let i = 1; i <= 25; i++) {
+    const b = document.createElement("button");
+    b.className = "theme-btn";
+    b.innerText = i;
+    b.addEventListener("click", () => {
+      playerFrame.style.filter = `hue-rotate(${i * 14}deg)`;
+    });
+    themeGrid.appendChild(b);
+  }
+
+  async function initAudio() {
+    if (audioCtx) return;
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    biquad = audioCtx.createBiquadFilter();
+    biquad.type = "peaking";
+    biquad.frequency.value = 1000;
+    biquad.gain.value = 0;
+
+    nitroGain = audioCtx.createGain();
+    nitroGain.gain.value = 1.0;
+
+    source = audioCtx.createMediaElementSource(audio);
+
+    source.connect(biquad);
+    biquad.connect(nitroGain);
+    nitroGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
+  }
+
+  function setMode(mode) {
+    if (!biquad) return;
+
+    modeTxt.innerText = mode + " MODE";
+
+    biquad.type = "peaking";
+    biquad.frequency.value = 1000;
+    biquad.gain.value = 0;
+
+    if (mode === "TURBO") {
+      biquad.type = "lowshelf";
+      biquad.frequency.value = 250;
+      biquad.gain.value = 14;
     }
 
-    playBtn.onclick = async () => {
-        await initAudio();
-        if (audioCtx.state === 'suspended') await audioCtx.resume();
-        audio.play();
-        statusTxt.innerText = "ENGINE: RUNNING";
-        animate();
-    };
-
-    pauseBtn.onclick = () => { audio.pause(); statusTxt.innerText = "ENGINE: STOPPED"; };
-    
-    function setTheme(hue) {
-        document.getElementById('playerFrame').style.filter = `hue-rotate(${hue}deg)`;
+    if (mode === "VOICE") {
+      biquad.type = "peaking";
+      biquad.frequency.value = 1500;
+      biquad.gain.value = 10;
     }
 
-    function setMode(m, btn) {
-        if(!audioCtx) return;
-        document.querySelectorAll('.btn-core').forEach(b => b.classList.remove('active-mode'));
-        btn.classList.add('active-mode');
-        modeTxt.innerText = m + " MODE";
-        biquad.type = (m === 'TURBO') ? "lowshelf" : "peaking";
-        biquad.gain.value = (m === 'TURBO') ? 15 : 0;
+    if (mode === "NIGHT") {
+      biquad.type = "highshelf";
+      biquad.frequency.value = 3500;
+      biquad.gain.value = -10;
+    }
+  }
+
+  document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".mode-btn").forEach(x => x.classList.remove("active-mode"));
+      btn.classList.add("active-mode");
+      setMode(btn.dataset.mode);
+    });
+  });
+
+  function animate() {
+    if (!running) return;
+    requestAnimationFrame(animate);
+
+    if (!analyser || !dataArray) return;
+
+    analyser.getByteFrequencyData(dataArray);
+
+    const ctx = engineCanvas.getContext("2d");
+    engineCanvas.width = engineCanvas.offsetWidth;
+    engineCanvas.height = engineCanvas.offsetHeight;
+
+    const cx = engineCanvas.width / 2;
+    const cy = engineCanvas.height / 2;
+
+    ctx.clearRect(0, 0, engineCanvas.width, engineCanvas.height);
+
+    // Glow central
+    const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 150);
+    glow.addColorStop(0, nitroActive ? "rgba(255,0,0,0.9)" : "rgba(255,215,0,0.9)");
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 150, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Linhas do espectro
+    dataArray.forEach((v, i) => {
+      const angle = (i / dataArray.length) * Math.PI * 2;
+      const len = (v / 255) * 130;
+
+      ctx.strokeStyle = nitroActive
+        ? "rgba(255,50,0,0.95)"
+        : `hsl(${(i * 5 + Date.now() / 40)}, 100%, 50%)`;
+
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(angle) * 70, cy + Math.sin(angle) * 70);
+      ctx.lineTo(cx + Math.cos(angle) * (70 + len), cy + Math.sin(angle) * (70 + len));
+      ctx.stroke();
+    });
+
+    // Agulhas
+    needle1.style.transform = `rotate(${(dataArray[5] / 255) * 140 - 70}deg)`;
+    needle2.style.transform = `rotate(${(dataArray[15] / 255) * 140 - 70}deg)`;
+    needle3.style.transform = `rotate(${(dataArray[40] / 255) * 140 - 70}deg)`;
+
+    // Barras LED
+    bar1.style.width = (dataArray[10] / 255 * 100) + "%";
+    bar2.style.width = (dataArray[25] / 255 * 100) + "%";
+  }
+
+  playBtn.addEventListener("click", async () => {
+    await initAudio();
+
+    if (audioCtx.state === "suspended") {
+      await audioCtx.resume();
     }
 
-    nitroBtn.onclick = () => {
-        if(!audioCtx) return;
-        const active = nitroBtn.classList.toggle('active-mode');
-        nitroGain.gain.setTargetAtTime(active ? 2.2 : 1.0, audioCtx.currentTime, 0.1);
-        statusTxt.innerText = active ? "NITRO: ENGAGED" : "ENGINE: RUNNING";
-    };
+    audio.volume = currentVol / 100;
 
-    volWheel.onwheel = (e) => {
-        e.preventDefault();
-        currentVol = e.deltaY < 0 ? Math.min(100, currentVol + 5) : Math.max(0, currentVol - 5);
-        audio.volume = currentVol / 100;
-        volDisplay.innerText = currentVol;
-        volWheel.style.transform = `rotate(${currentVol * 3.6}deg)`;
-    };
-
-    function animate() {
-        requestAnimationFrame(animate);
-        if(!analyser) return;
-        analyser.getByteFrequencyData(dataArray);
-        
-        const canvas = document.getElementById('engineCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-        const cx = canvas.width / 2, cy = canvas.height / 2;
-
-        // Visualizador Central
-        dataArray.forEach((v, i) => {
-            const angle = (i / dataArray.length) * Math.PI * 2;
-            const len = v * 0.7;
-            ctx.strokeStyle = `hsl(${(i * 5)}, 100%, 50%)`;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(cx + Math.cos(angle) * 70, cy + Math.sin(angle) * 70);
-            ctx.lineTo(cx + Math.cos(angle) * (70 + len), cy + Math.sin(angle) * (70 + len));
-            ctx.stroke();
-        });
-
-        // Movimento das Agulhas
-        needle1.style.transform = `rotate(${(dataArray[5] / 255) * 140 - 70}deg)`;
-        needle2.style.transform = `rotate(${(dataArray[15] / 255) * 140 - 70}deg)`;
-        needle3.style.transform = `rotate(${(dataArray[40] / 255) * 140 - 70}deg)`;
-
-        // Movimento das Barras LED
-        bar1.style.width = (dataArray[10] / 255 * 100) + "%";
-        bar2.style.width = (dataArray[25] / 255 * 100) + "%";
+    try {
+      await audio.play();
+      running = true;
+      statusTxt.innerText = "ENGINE: RUNNING";
+      animate();
+    } catch (err) {
+      alert("O navegador bloqueou o áudio. Clique novamente em START.");
+      console.log(err);
     }
+  });
 
-    setInterval(() => {
-        const d = new Date();
-        clockDisplay.innerText = d.toLocaleTimeString();
-    }, 1000);
+  pauseBtn.addEventListener("click", () => {
+    audio.pause();
+    running = false;
+    statusTxt.innerText = "ENGINE: STOPPED";
+  });
 
-    async function getNews() {
-        try {
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419')}`);
-            const data = await res.json();
-            const news = data.items.map(i => `<span class="px-12 text-white text-lg"><span class="text-red-600">█</span> ${i.title}</span>`).join("");
-            document.getElementById('newsBox').innerHTML = news + news;
-        } catch(e) { }
+  muteBtn.addEventListener("click", () => {
+    audio.muted = !audio.muted;
+    muteBtn.innerText = audio.muted ? "MUTED" : "MUTE";
+    muteBtn.style.boxShadow = audio.muted ? "0 0 20px #00e5ff" : "none";
+  });
+
+  nitroBtn.addEventListener("click", () => {
+    if (!audioCtx || !nitroGain) return;
+
+    nitroActive = !nitroActive;
+
+    nitroBtn.style.boxShadow = nitroActive ? "0 0 25px red" : "none";
+    nitroGain.gain.setTargetAtTime(nitroActive ? 2.2 : 1.0, audioCtx.currentTime, 0.12);
+
+    statusTxt.innerText = nitroActive ? "NITRO: ENGAGED" : (running ? "ENGINE: RUNNING" : "ENGINE: READY");
+  });
+
+  volWheel.addEventListener("wheel", (e) => {
+    e.preventDefault();
+
+    currentVol = e.deltaY < 0
+      ? Math.min(100, currentVol + 5)
+      : Math.max(0, currentVol - 5);
+
+    audio.volume = currentVol / 100;
+    volDisplay.innerText = currentVol;
+    volWheel.style.transform = `rotate(${currentVol * 3.6}deg)`;
+
+  }, { passive: false });
+
+  // Relógio
+  setInterval(() => {
+    const d = new Date();
+    clockDisplay.innerText = d.toLocaleTimeString();
+    dateDisplay.innerText = d.toLocaleDateString();
+  }, 1000);
+
+  // Notícias
+  async function getNews() {
+    try {
+      const rss = "https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419";
+      const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}`;
+
+      const res = await fetch(api);
+      const data = await res.json();
+
+      if (data.status !== "ok") return;
+
+      const html = data.items.slice(0, 15).map(i =>
+        `<span class="ticker-link news-item"><i>█</i> ${i.title}</span>`
+      ).join("");
+
+      document.getElementById("newsBox").innerHTML = html + html;
+
+    } catch (e) {
+      document.getElementById("newsBox").innerHTML =
+        `<span class="ticker-link news-item"><i>█</i> Falha ao carregar notícias.</span>`;
     }
-    getNews();
+  }
+
+  getNews();
+  setInterval(getNews, 300000);
+
+})();
 </script>
 
 </body>
