@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>INTERCONTINENTAL • GOLDEN ENGINE V4.5</title>
+  <title>INTERCONTINENTAL • GOLDEN ENGINE V4.6</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -78,6 +78,7 @@
       font-family: 'Share Tech Mono';
     }
 
+    /* --- MEDIDORES --- */
     .gauge-box {
       width: 130px;
       height: 75px;
@@ -102,6 +103,7 @@
       box-shadow: 0 0 5px #ff0000;
     }
 
+    /* --- LED BAR --- */
     .led-bar {
       width: 100%;
       height: 12px;
@@ -119,6 +121,7 @@
       transition: width 0.08s linear;
     }
 
+    /* --- BOTÕES --- */
     .btn-core {
       background: linear-gradient(to bottom, #444, #111);
       border: 2px solid var(--gold-main);
@@ -141,6 +144,7 @@
       box-shadow: 0 0 25px var(--gold-main);
     }
 
+    /* --- THEME BUTTONS --- */
     .theme-btn {
       border: 1px solid #444;
       background: #222;
@@ -157,8 +161,9 @@
       color: #000;
     }
 
-    /* ============ LETREIROS ============ */
-
+    /* ===================================================
+       LETREIROS DIGITAIS
+    =================================================== */
     .ticker-top {
       position: fixed;
       top: 0;
@@ -234,7 +239,7 @@
     }
 
     .news-speed {
-      animation: moveTickerNews 85s linear infinite;
+      animation: moveTickerNews 90s linear infinite;
     }
 
     @keyframes moveTickerEco {
@@ -297,6 +302,200 @@
       .ticker-label { font-size: 11px; padding: 0 15px; }
       body { padding: 90px 0 90px 0; }
     }
+
+    /* ===================================================
+       ROBÔ MASCOTE DANÇARINO
+    =================================================== */
+    .mascot-bot {
+      position: fixed;
+      bottom: 85px;
+      right: 18px;
+      width: 120px;
+      height: 160px;
+      z-index: 5000;
+      pointer-events: none;
+      filter: drop-shadow(0 0 18px rgba(255,215,0,0.55));
+      animation: mascotFloat 2.2s ease-in-out infinite;
+    }
+
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .bot-antenna {
+      width: 6px;
+      height: 20px;
+      background: var(--gold-main);
+      margin: 0 auto;
+      border-radius: 20px;
+      position: relative;
+      top: 6px;
+      box-shadow: 0 0 12px rgba(255,215,0,0.7);
+    }
+
+    .bot-antenna::after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 18px rgba(0,229,255,0.9);
+      animation: blinkLight 0.8s infinite alternate;
+    }
+
+    @keyframes blinkLight {
+      from { opacity: 0.4; transform: translateX(-50%) scale(0.9); }
+      to   { opacity: 1; transform: translateX(-50%) scale(1.2); }
+    }
+
+    .bot-head {
+      width: 90px;
+      height: 65px;
+      margin: 0 auto;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #555, #111);
+      border: 2px solid rgba(255,215,0,0.9);
+      box-shadow: inset 0 0 12px rgba(255,255,255,0.2);
+      position: relative;
+      top: 5px;
+    }
+
+    .bot-eye {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--neon-blue);
+      box-shadow: 0 0 18px rgba(0,229,255,0.9);
+      position: absolute;
+      top: 22px;
+      animation: eyeBlink 4s infinite;
+    }
+
+    .bot-eye.left { left: 18px; }
+    .bot-eye.right {
+      right: 18px;
+      background: var(--neon-pink);
+      box-shadow: 0 0 18px rgba(255,0,255,0.9);
+    }
+
+    @keyframes eyeBlink {
+      0%, 95%, 100% { transform: scaleY(1); }
+      97% { transform: scaleY(0.1); }
+    }
+
+    .bot-mouth {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 10px;
+      border-radius: 6px;
+      background: linear-gradient(to right, var(--gold-main), var(--neon-green));
+      box-shadow: 0 0 10px rgba(255,215,0,0.6);
+      opacity: 0.8;
+    }
+
+    .bot-body {
+      width: 100px;
+      height: 80px;
+      margin: 8px auto 0 auto;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #333, #000);
+      border: 2px solid rgba(255,215,0,0.85);
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.1);
+      position: relative;
+      top: 3px;
+    }
+
+    .bot-core {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,215,0,1) 0%, rgba(255,0,0,0.6) 60%, rgba(0,0,0,0) 100%);
+      box-shadow: 0 0 20px rgba(255,215,0,0.8);
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: corePulse 1s infinite alternate;
+    }
+
+    @keyframes corePulse {
+      from { transform: translateX(-50%) scale(0.9); opacity: 0.7; }
+      to   { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    }
+
+    .bot-arm {
+      width: 22px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #555, #111);
+      border: 2px solid rgba(255,215,0,0.6);
+      position: absolute;
+      top: 10px;
+      transform-origin: top center;
+    }
+
+    .bot-arm.left {
+      left: -18px;
+      animation: armDanceL 0.6s infinite alternate ease-in-out;
+    }
+
+    .bot-arm.right {
+      right: -18px;
+      animation: armDanceR 0.6s infinite alternate ease-in-out;
+    }
+
+    @keyframes armDanceL {
+      from { transform: rotate(-25deg); }
+      to { transform: rotate(25deg); }
+    }
+
+    @keyframes armDanceR {
+      from { transform: rotate(25deg); }
+      to { transform: rotate(-25deg); }
+    }
+
+    .bot-leg {
+      width: 26px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #444, #000);
+      border: 2px solid rgba(255,215,0,0.6);
+      position: absolute;
+      bottom: -35px;
+    }
+
+    .bot-leg.left {
+      left: 18px;
+      animation: legDance 0.5s infinite alternate;
+    }
+
+    .bot-leg.right {
+      right: 18px;
+      animation: legDance 0.5s infinite alternate-reverse;
+    }
+
+    @keyframes legDance {
+      from { transform: translateY(0px); }
+      to { transform: translateY(6px); }
+    }
+
+    .mascot-beat {
+      animation: beatJump 0.12s ease-out;
+    }
+
+    @keyframes beatJump {
+      0% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-12px) scale(1.08); }
+      100% { transform: translateY(0px) scale(1); }
+    }
   </style>
 </head>
 
@@ -343,6 +542,27 @@
   </div>
 </div>
 
+<!-- ROBÔ MASCOTE -->
+<div class="mascot-bot" id="mascotBot">
+  <div class="bot-antenna"></div>
+
+  <div class="bot-head">
+    <div class="bot-eye left"></div>
+    <div class="bot-eye right"></div>
+    <div class="bot-mouth"></div>
+  </div>
+
+  <div class="bot-body">
+    <div class="bot-arm left"></div>
+    <div class="bot-arm right"></div>
+
+    <div class="bot-core"></div>
+
+    <div class="bot-leg left"></div>
+    <div class="bot-leg right"></div>
+  </div>
+</div>
+
 <!-- PLAYER -->
 <div class="chassis" id="playerFrame">
   <div class="inner-deck">
@@ -352,7 +572,7 @@
         <h1 class="text-5xl lg:text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-600 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
           INTERCONTINENTAL
         </h1>
-        <p class="text-[11px] tracking-[0.7em] text-yellow-400 font-bold">GOLDEN ENGINE V4.5 PREMIUM</p>
+        <p class="text-[11px] tracking-[0.7em] text-yellow-400 font-bold">GOLDEN ENGINE V4.6 PREMIUM</p>
       </div>
 
       <div class="lcd-v4 w-full md:w-80">
@@ -492,6 +712,8 @@
   const playerFrame = document.getElementById("playerFrame");
   const themeGrid = document.getElementById("themeGrid");
 
+  const mascotBot = document.getElementById("mascotBot");
+
   let audioCtx = null;
   let analyser = null;
   let source = null;
@@ -503,7 +725,7 @@
   let nitroActive = false;
   let running = false;
 
-  // Cria botões de tema sem document.write
+  // TEMAS
   for (let i = 1; i <= 25; i++) {
     const b = document.createElement("button");
     b.className = "theme-btn";
@@ -601,7 +823,7 @@
     ctx.arc(cx, cy, 150, 0, Math.PI * 2);
     ctx.fill();
 
-    // Linhas do espectro
+    // Visualizador circular
     dataArray.forEach((v, i) => {
       const angle = (i / dataArray.length) * Math.PI * 2;
       const len = (v / 255) * 130;
@@ -625,6 +847,15 @@
     // Barras LED
     bar1.style.width = (dataArray[10] / 255 * 100) + "%";
     bar2.style.width = (dataArray[25] / 255 * 100) + "%";
+
+    // ROBÔ reage ao grave
+    if (mascotBot) {
+      const beat = dataArray[8];
+      if (beat > 180) {
+        mascotBot.classList.add("mascot-beat");
+        setTimeout(() => mascotBot.classList.remove("mascot-beat"), 120);
+      }
+    }
   }
 
   playBtn.addEventListener("click", async () => {
@@ -642,7 +873,7 @@
       statusTxt.innerText = "ENGINE: RUNNING";
       animate();
     } catch (err) {
-      alert("O navegador bloqueou o áudio. Clique novamente em START.");
+      alert("Seu navegador bloqueou o áudio. Clique novamente em START.");
       console.log(err);
     }
   });
@@ -667,7 +898,9 @@
     nitroBtn.style.boxShadow = nitroActive ? "0 0 25px red" : "none";
     nitroGain.gain.setTargetAtTime(nitroActive ? 2.2 : 1.0, audioCtx.currentTime, 0.12);
 
-    statusTxt.innerText = nitroActive ? "NITRO: ENGAGED" : (running ? "ENGINE: RUNNING" : "ENGINE: READY");
+    statusTxt.innerText = nitroActive
+      ? "NITRO: ENGAGED"
+      : (running ? "ENGINE: RUNNING" : "ENGINE: READY");
   });
 
   volWheel.addEventListener("wheel", (e) => {
